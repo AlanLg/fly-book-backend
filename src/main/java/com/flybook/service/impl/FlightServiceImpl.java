@@ -121,8 +121,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Flight getFlightForReservation(ReservationDTORequest reservationDTORequest) {
-        return flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(
-                reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
+        return flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
         ).orElseThrow(FlightNotFoundException::new);
     }
 
