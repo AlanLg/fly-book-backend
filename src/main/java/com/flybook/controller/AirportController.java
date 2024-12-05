@@ -1,6 +1,6 @@
 package com.flybook.controller;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
 import com.flybook.service.AirportService;
@@ -25,19 +25,19 @@ public class AirportController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<AirportDTOResponse> getAirport(@PathVariable Long id) throws GalacticsAirlinesException {
+    public ResponseEntity<AirportDTOResponse> getAirport(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(airportService.getAirport(id));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AirportDTOResponse> addAirport(@RequestBody AirportDTORequest airportDTORequest) throws GalacticsAirlinesException {
+    public ResponseEntity<AirportDTOResponse> addAirport(@RequestBody AirportDTORequest airportDTORequest) throws FlybookException {
         log.info("Adding airport: {}", airportDTORequest.toString());
         return ResponseEntity.ok(airportService.addAirport(airportDTORequest));
     }
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AirportDTOResponse> updateAirport(@PathVariable Long id, @RequestBody AirportDTORequest airportDTORequest) throws GalacticsAirlinesException {
+    public ResponseEntity<AirportDTOResponse> updateAirport(@PathVariable Long id, @RequestBody AirportDTORequest airportDTORequest) throws FlybookException {
         log.info("Updating airport: {}", airportDTORequest.toString());
         return ResponseEntity.ok(airportService.updateAirport(id, airportDTORequest));
     }
@@ -48,7 +48,7 @@ public class AirportController {
             airportService.deleteAirport(id);
             log.info("Airport Deleted");
             return ResponseEntity.accepted().build();
-        } catch (GalacticsAirlinesException e) {
+        } catch (FlybookException e) {
             return ResponseEntity.badRequest().build();
         }
     }

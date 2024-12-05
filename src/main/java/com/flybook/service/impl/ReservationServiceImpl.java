@@ -1,6 +1,6 @@
 package com.flybook.service.impl;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ReservationMapper;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
@@ -45,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
         log.info("mapping de la réservation");
 
         if (!ReservationValidationUtils.isValidReservation(createdReservation)) {
-            throw new GalacticsAirlinesException("Il manque un élément dans la réservation");
+            throw new FlybookException("Il manque un élément dans la réservation");
         }
 
         Optional<Reservation> existingReservation = reservationRepository

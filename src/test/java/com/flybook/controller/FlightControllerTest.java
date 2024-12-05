@@ -1,6 +1,6 @@
 package com.flybook.controller;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.FlightDTORequest;
 import com.flybook.model.dto.response.FlightDTOResponse;
 import com.flybook.service.FlightService;
@@ -29,7 +29,7 @@ public class FlightControllerTest {
     }
 
     @Test
-    void shouldReturnFlightWhenGetFlightIsCalledWithValidId() throws GalacticsAirlinesException {
+    void shouldReturnFlightWhenGetFlightIsCalledWithValidId() throws FlybookException {
         Long id = 1L;
         FlightDTOResponse expectedResponse = new FlightDTOResponse();
         when(flightService.getFlight(id)).thenReturn(expectedResponse);
@@ -42,16 +42,16 @@ public class FlightControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenGetFlightIsCalledWithInvalidId() throws GalacticsAirlinesException {
+    void shouldThrowExceptionWhenGetFlightIsCalledWithInvalidId() throws FlybookException {
         Long id = -1L;
-        when(flightService.getFlight(id)).thenThrow(new GalacticsAirlinesException("Invalid id"));
+        when(flightService.getFlight(id)).thenThrow(new FlybookException("Invalid id"));
 
-        assertThrows(GalacticsAirlinesException.class, () -> flightController.getFlight(id));
+        assertThrows(FlybookException.class, () -> flightController.getFlight(id));
         verify(flightService, times(1)).getFlight(id);
     }
 
     @Test
-    void testAddFlight_Success() throws GalacticsAirlinesException {
+    void testAddFlight_Success() throws FlybookException {
         // Arrange
         FlightDTORequest request = new FlightDTORequest();
         FlightDTOResponse expectedResponse = new FlightDTOResponse();
@@ -69,7 +69,7 @@ public class FlightControllerTest {
     }
 
     @Test
-    void testUpdateFlight_Success() throws GalacticsAirlinesException {
+    void testUpdateFlight_Success() throws FlybookException {
         // Arrange
         Long id = 1L;
         FlightDTORequest request = new FlightDTORequest();
@@ -88,7 +88,7 @@ public class FlightControllerTest {
     }
 
     @Test
-    void testDeleteFlight_Success() throws GalacticsAirlinesException {
+    void testDeleteFlight_Success() throws FlybookException {
         // Arrange
         Long id = 1L;
 
@@ -103,10 +103,10 @@ public class FlightControllerTest {
     }
 
     @Test
-    void testDeleteFlight_Failure() throws GalacticsAirlinesException {
+    void testDeleteFlight_Failure() throws FlybookException {
         // Arrange
         Long id = 1L;
-        doThrow(new GalacticsAirlinesException("Flight not found")).when(flightService).deleteFlight(id);
+        doThrow(new FlybookException("Flight not found")).when(flightService).deleteFlight(id);
 
         // Act
         ResponseEntity<Void> response = flightController.deleteFlight(id);

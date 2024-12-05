@@ -2,7 +2,7 @@ package com.flybook.service.impl;
 
 import com.flybook.exception.ClientAlreadyExistsException;
 import com.flybook.exception.ClientNotFoundException;
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ClientMapper;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
@@ -32,11 +32,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDTOResponse addClient(ClientDTORequest clientDTORequest) throws GalacticsAirlinesException {
+    public ClientDTOResponse addClient(ClientDTORequest clientDTORequest) throws FlybookException {
         Client createdClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
         if (!ClientValidationUtils.isValidClient(createdClient)) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Optional<Client> existingClient = clientRepository.findByEmail(createdClient.getEmail());
@@ -52,15 +52,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest) throws GalacticsAirlinesException {
+    public ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest) throws FlybookException {
         if (id == null || clientRepository.findById(id).isEmpty()) {
-            throw new GalacticsAirlinesException("Aucun client en bdd");
+            throw new FlybookException("Aucun client en bdd");
         }
 
         Client updatedClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
         if (!ClientValidationUtils.isValidClient(updatedClient)) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         updatedClient.setId(id);
@@ -69,16 +69,16 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void deleteClient(Long id) throws GalacticsAirlinesException {
+    public void deleteClient(Long id) throws FlybookException {
         if (id == null) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Client client = clientRepository.findById(id).orElse(null);
         if (client != null) {
             clientRepository.delete(client);
         } else {
-            throw new GalacticsAirlinesException("Aucun client en base");
+            throw new FlybookException("Aucun client en base");
         }
     }
 

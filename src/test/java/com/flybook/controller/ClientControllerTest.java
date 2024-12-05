@@ -1,5 +1,5 @@
 package com.flybook.controller;
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
 import com.flybook.service.ClientService;
@@ -27,7 +27,7 @@ public class ClientControllerTest {
     }
 
     @Test
-    void addClientReturnsClientResponseSuccessfully() throws GalacticsAirlinesException {
+    void addClientReturnsClientResponseSuccessfully() throws FlybookException {
         ClientDTORequest request = new ClientDTORequest();
         ClientDTOResponse expectedResponse = new ClientDTOResponse();
         when(clientService.addClient(request)).thenReturn(expectedResponse);
@@ -40,7 +40,7 @@ public class ClientControllerTest {
     }
 
     @Test
-    void updateClientReturnsClientResponseSuccessfully() throws GalacticsAirlinesException {
+    void updateClientReturnsClientResponseSuccessfully() throws FlybookException {
         Long id = 1L;
         ClientDTORequest request = new ClientDTORequest();
         ClientDTOResponse expectedResponse = new ClientDTOResponse();
@@ -66,7 +66,7 @@ public class ClientControllerTest {
     @Test
     void deleteClientReturnsBadRequestWhenExceptionThrown() {
         Long id = 1L;
-        doThrow(new GalacticsAirlinesException("")).when(clientService).deleteClient(id);
+        doThrow(new FlybookException("")).when(clientService).deleteClient(id);
 
         ResponseEntity<Void> response = clientController.deleteClient(id);
 

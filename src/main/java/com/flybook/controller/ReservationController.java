@@ -1,6 +1,6 @@
 package com.flybook.controller;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.service.ReservationService;
@@ -26,7 +26,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/add/with-existing-client")
-    public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) throws GalacticsAirlinesException {
+    public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) throws FlybookException {
         return ResponseEntity.ok(reservationService.createReservation(reservationDTORequestWithExistingClient));
     }
 }

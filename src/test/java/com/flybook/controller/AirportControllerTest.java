@@ -1,6 +1,6 @@
 package com.flybook.controller;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
 import com.flybook.service.AirportService;
@@ -29,7 +29,7 @@ public class AirportControllerTest {
     }
 
     @Test
-    void shouldReturnAirportWhenGetAirportIsCalledWithValidId() throws GalacticsAirlinesException {
+    void shouldReturnAirportWhenGetAirportIsCalledWithValidId() throws FlybookException {
         Long id = 1L;
         AirportDTOResponse expectedResponse = new AirportDTOResponse();
         when(airportService.getAirport(id)).thenReturn(expectedResponse);
@@ -42,16 +42,16 @@ public class AirportControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenGetAirportIsCalledWithInvalidId() throws GalacticsAirlinesException {
+    void shouldThrowExceptionWhenGetAirportIsCalledWithInvalidId() throws FlybookException {
         Long id = -1L;
-        when(airportService.getAirport(id)).thenThrow(new GalacticsAirlinesException("Invalid id"));
+        when(airportService.getAirport(id)).thenThrow(new FlybookException("Invalid id"));
 
-        assertThrows(GalacticsAirlinesException.class, () -> airportController.getAirport(id));
+        assertThrows(FlybookException.class, () -> airportController.getAirport(id));
         verify(airportService, times(1)).getAirport(id);
     }
 
     @Test
-    void testAddAirport_Success() throws GalacticsAirlinesException {
+    void testAddAirport_Success() throws FlybookException {
         AirportDTORequest airportDTORequest = new AirportDTORequest();
         AirportDTOResponse expectedResponse = new AirportDTOResponse();
         when(airportService.addAirport(any())).thenReturn(expectedResponse);
@@ -63,7 +63,7 @@ public class AirportControllerTest {
     }
 
     @Test
-    void testUpdateAirport_Success() throws GalacticsAirlinesException {
+    void testUpdateAirport_Success() throws FlybookException {
         Long id = 1L;
         AirportDTORequest airportDTORequest = new AirportDTORequest();
         AirportDTOResponse expectedResponse = new AirportDTOResponse();
@@ -76,7 +76,7 @@ public class AirportControllerTest {
     }
 
     @Test
-    void testDeleteAirport_Success() throws GalacticsAirlinesException {
+    void testDeleteAirport_Success() throws FlybookException {
         Long id = 1L;
 
         ResponseEntity<Void> responseEntity = airportController.deleteAirport(id);
@@ -86,9 +86,9 @@ public class AirportControllerTest {
     }
 
     @Test
-    void testDeleteAirport_Failure() throws GalacticsAirlinesException {
+    void testDeleteAirport_Failure() throws FlybookException {
         Long id = 1L;
-        doThrow(new GalacticsAirlinesException("Airport not found")).when(airportService).deleteAirport(id);
+        doThrow(new FlybookException("Airport not found")).when(airportService).deleteAirport(id);
 
         ResponseEntity<Void> responseEntity = airportController.deleteAirport(id);
 

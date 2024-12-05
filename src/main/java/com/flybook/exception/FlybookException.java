@@ -4,13 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class GalacticsAirlinesException extends RuntimeException {
+public class FlybookException extends RuntimeException {
 
-    public GalacticsAirlinesException(String message) {
+    public FlybookException(String message) {
         super(message);
     }
 
-    public GalacticsAirlinesException(String message, Throwable cause) {
+    public FlybookException(String message, Throwable cause) {
         super(message, cause);
     }
 }

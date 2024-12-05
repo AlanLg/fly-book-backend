@@ -1,5 +1,5 @@
 package com.flybook.controller;
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.service.ReservationService;
@@ -27,7 +27,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void addReservationWithExistingClientReturnsReservationResponseSuccessfully() throws GalacticsAirlinesException {
+    void addReservationWithExistingClientReturnsReservationResponseSuccessfully() throws FlybookException {
         ReservationDTORequestWithExistingClient request = new ReservationDTORequestWithExistingClient();
         ReservationDTOResponse expectedResponse = new ReservationDTOResponse();
         when(reservationService.createReservation(request)).thenReturn(expectedResponse);

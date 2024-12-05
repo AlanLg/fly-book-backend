@@ -1,7 +1,7 @@
 package com.flybook.service.impl;
 
 import com.flybook.exception.ClientAlreadyExistsException;
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.entity.Client;
 import com.flybook.repository.ClientRepository;
@@ -66,7 +66,7 @@ public class ClientServiceImplTest {
 
         when(clientRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(GalacticsAirlinesException.class, () -> clientService.updateClient(1L, clientDTORequest));
+        assertThrows(FlybookException.class, () -> clientService.updateClient(1L, clientDTORequest));
     }
 
     @Test
@@ -80,6 +80,6 @@ public class ClientServiceImplTest {
     public void deleteClientThrowsExceptionWhenClientNotFound() {
         when(clientRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(GalacticsAirlinesException.class, () -> clientService.deleteClient(1L));
+        assertThrows(FlybookException.class, () -> clientService.deleteClient(1L));
     }
 }

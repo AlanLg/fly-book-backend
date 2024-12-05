@@ -1,6 +1,6 @@
 package com.flybook.controller;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
 import com.flybook.service.ClientService;
@@ -25,18 +25,18 @@ public class ClientController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<ClientDTOResponse> getClient(@PathVariable Long id) throws GalacticsAirlinesException {
+    public ResponseEntity<ClientDTOResponse> getClient(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(clientService.getClient(id));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ClientDTOResponse> addClient(@Valid @RequestBody ClientDTORequest clientDTORequest) throws GalacticsAirlinesException {
+    public ResponseEntity<ClientDTOResponse> addClient(@Valid @RequestBody ClientDTORequest clientDTORequest) throws FlybookException {
         log.info("Adding client: {}", clientDTORequest.toString());
         return ResponseEntity.ok(clientService.addClient(clientDTORequest));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ClientDTOResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTORequest clientDTORequest) throws GalacticsAirlinesException {
+    public ResponseEntity<ClientDTOResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTORequest clientDTORequest) throws FlybookException {
         log.info("Updating client: {}", clientDTORequest.toString());
         return ResponseEntity.ok(clientService.updateClient(id, clientDTORequest));
     }
@@ -47,7 +47,7 @@ public class ClientController {
         try {
             clientService.deleteClient(id);
             return ResponseEntity.accepted().build();
-        } catch (GalacticsAirlinesException e) {
+        } catch (FlybookException e) {
             return ResponseEntity.badRequest().build();
         }
     }

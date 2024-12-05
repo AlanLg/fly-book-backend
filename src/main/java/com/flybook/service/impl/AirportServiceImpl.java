@@ -1,6 +1,6 @@
 package com.flybook.service.impl;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.mapper.AirportMapper;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
@@ -22,25 +22,25 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
-    public AirportDTOResponse getAirport(Long id) throws GalacticsAirlinesException {
+    public AirportDTOResponse getAirport(Long id) throws FlybookException {
         if (id == null) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Airport targetAirport = airportRepository.findById(id).orElse(null);
 
         if (targetAirport == null) {
-            throw new GalacticsAirlinesException("No flight in the data base");
+            throw new FlybookException("No flight in the data base");
         }
         return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(targetAirport);
     }
 
     @Override
-    public AirportDTOResponse addAirport(AirportDTORequest airportDTORequest) throws GalacticsAirlinesException {
+    public AirportDTOResponse addAirport(AirportDTORequest airportDTORequest) throws FlybookException {
         Airport createdAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
         if (!AirportValidationUtils.isValidAirport(createdAirport)) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Optional<Airport> existingAirport = airportRepository.findByAirportName(createdAirport.getAirportName());
@@ -53,15 +53,15 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
-    public AirportDTOResponse updateAirport(Long id, AirportDTORequest airportDTORequest) throws GalacticsAirlinesException {
+    public AirportDTOResponse updateAirport(Long id, AirportDTORequest airportDTORequest) throws FlybookException {
         if (id == null || airportRepository.findById(id).isEmpty()) {
-            throw new GalacticsAirlinesException("Aucun airport en bdd");
+            throw new FlybookException("Aucun airport en bdd");
         }
 
         Airport updatedAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
         if (!AirportValidationUtils.isValidAirport(updatedAirport)) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         updatedAirport.setAirportId(id);
@@ -70,16 +70,16 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
-    public void deleteAirport(Long id) throws GalacticsAirlinesException {
+    public void deleteAirport(Long id) throws FlybookException {
         if (id == null) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Airport airport = airportRepository.findById(id).orElse(null);
         if (airport != null) {
             airportRepository.delete(airport);
         } else {
-            throw new GalacticsAirlinesException("Aucun aeroport en base");
+            throw new FlybookException("Aucun aeroport en base");
         }
     }
 

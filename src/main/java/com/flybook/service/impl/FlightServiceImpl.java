@@ -1,7 +1,7 @@
 package com.flybook.service.impl;
 
 import com.flybook.exception.FlightNotFoundException;
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.mapper.FlightMapper;
 import com.flybook.model.dto.request.FilterFlightDTORequest;
 import com.flybook.model.dto.request.FlightDTORequest;
@@ -38,12 +38,12 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDTOResponse addFlight(FlightDTORequest flightDTORequest) throws GalacticsAirlinesException {
+    public FlightDTOResponse addFlight(FlightDTORequest flightDTORequest) throws FlybookException {
         Flight createdFlight = linkAndSaveAssociatedEntities(flightDTORequest);
 
         if (flightDTORequest.getArrivalAirport().equals(flightDTORequest.getDepartureAirport())) {
             log.info("departure and arrival airport cannot be the same");
-            throw new GalacticsAirlinesException("departure and arrival airport cannot be the same");
+            throw new FlybookException("departure and arrival airport cannot be the same");
         }
 
         Optional<Flight> existingFlight = flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(
@@ -59,9 +59,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDTOResponse updateFlight(Long id, FlightDTORequest flightDTORequest) throws GalacticsAirlinesException {
+    public FlightDTOResponse updateFlight(Long id, FlightDTORequest flightDTORequest) throws FlybookException {
         if (id == null || flightRepository.findById(id).isEmpty()) {
-            throw new GalacticsAirlinesException("No flight found in the database");
+            throw new FlybookException("No flight found in the database");
         }
 
         Flight updatedFlight = linkAndSaveAssociatedEntities(flightDTORequest);;
@@ -74,7 +74,7 @@ public class FlightServiceImpl implements FlightService {
         Flight updatedFlight = FlightMapper.INSTANCE.flightDTORequestToFlightEntity(flightDTORequest);
 
         if (!FlightValidationUtils.verifyElementInEntityToSave(updatedFlight)) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Airport departureAirport = airportService.findOrSaveAirport(updatedFlight.getDepartureAirport());
@@ -89,18 +89,18 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public void deleteFlight(Long id) {
         if (id == null) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Flight flight = flightRepository.findById(id).orElse(null);
         if (flight != null ) {
             List<Reservation> reservationsOfFlight = reservationRepository.findByFlight_FlightId(flight.getFlightId()).orElse(null);
             if (reservationsOfFlight != null && !reservationsOfFlight.isEmpty()){
-                throw new GalacticsAirlinesException("Impossible to delete flight because some reservations are links with this flight");
+                throw new FlybookException("Impossible to delete flight because some reservations are links with this flight");
             }
             flightRepository.delete(flight);
         } else {
-            throw new GalacticsAirlinesException("No flight in the data base");
+            throw new FlybookException("No flight in the data base");
         }
     }
 
@@ -127,15 +127,15 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDTOResponse getFlight(Long id) throws GalacticsAirlinesException {
+    public FlightDTOResponse getFlight(Long id) throws FlybookException {
         if (id == null) {
-            throw new GalacticsAirlinesException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON");
         }
 
         Flight targetFlight = flightRepository.findById(id).orElse(null);
 
         if (targetFlight == null) {
-            throw new GalacticsAirlinesException("No flight in the data base");
+            throw new FlybookException("No flight in the data base");
         }
         return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(targetFlight);
     }

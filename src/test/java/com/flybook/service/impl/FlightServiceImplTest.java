@@ -1,6 +1,6 @@
 package com.flybook.service.impl;
 
-import com.flybook.exception.GalacticsAirlinesException;
+import com.flybook.exception.FlybookException;
 import com.flybook.mapper.FlightMapper;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.request.FilterFlightDTORequest;
@@ -47,7 +47,7 @@ public class FlightServiceImplTest {
     }
 
     @Test
-    void shouldReturnFlightWhenGetFlightIsCalledWithValidId() throws GalacticsAirlinesException {
+    void shouldReturnFlightWhenGetFlightIsCalledWithValidId() throws FlybookException {
         Long id = 1L;
         Flight flight = new Flight();
         when(flightRepository.findById(id)).thenReturn(Optional.of(flight));
@@ -61,7 +61,7 @@ public class FlightServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenGetFlightIsCalledWithNullId() {
-        assertThrows(GalacticsAirlinesException.class, () -> flightService.getFlight(null));
+        assertThrows(FlybookException.class, () -> flightService.getFlight(null));
         verify(flightRepository, never()).findById(any());
     }
 
@@ -70,12 +70,12 @@ public class FlightServiceImplTest {
         Long id = -1L;
         when(flightRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(GalacticsAirlinesException.class, () -> flightService.getFlight(id));
+        assertThrows(FlybookException.class, () -> flightService.getFlight(id));
         verify(flightRepository, times(1)).findById(id);
     }
 
     @Test
-    void testAddFlight_Success() throws GalacticsAirlinesException {
+    void testAddFlight_Success() throws FlybookException {
         AirportDTORequest departureAirport = new AirportDTORequest();
         departureAirport.setAirportName("TestAirportName");
 
@@ -99,7 +99,7 @@ public class FlightServiceImplTest {
     }
 
     @Test
-    void testUpdateFlight_Success() throws GalacticsAirlinesException {
+    void testUpdateFlight_Success() throws FlybookException {
         Long id = 1L;
         AirportDTORequest airport = new AirportDTORequest();
         airport.setAirportName("TestAirportName");
@@ -120,7 +120,7 @@ public class FlightServiceImplTest {
     }
 
     @Test
-    void testDeleteFlight_Success() throws GalacticsAirlinesException {
+    void testDeleteFlight_Success() throws FlybookException {
         Long id = 1L;
         Flight flight = new Flight();
         when(flightRepository.findById(id)).thenReturn(Optional.of(flight));
@@ -133,7 +133,7 @@ public class FlightServiceImplTest {
 
     @Test
     void testDeleteFlight_Failure_IdNull() {
-        assertThrows(GalacticsAirlinesException.class, () -> flightService.deleteFlight(null));
+        assertThrows(FlybookException.class, () -> flightService.deleteFlight(null));
     }
 
     @Test
@@ -141,11 +141,11 @@ public class FlightServiceImplTest {
         Long id = 1L;
         when(flightRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(GalacticsAirlinesException.class, () -> flightService.deleteFlight(id));
+        assertThrows(FlybookException.class, () -> flightService.deleteFlight(id));
     }
 
     @Test
-    void testSearchFlight_NoFilter() throws GalacticsAirlinesException {
+    void testSearchFlight_NoFilter() throws FlybookException {
         FilterFlightDTORequest filter = new FilterFlightDTORequest();
         List<Flight> flights = Arrays.asList(new Flight(), new Flight(), new Flight());
         when(flightRepository.findAll()).thenReturn(flights);
@@ -157,7 +157,7 @@ public class FlightServiceImplTest {
     }
 
     @Test
-    void testSearchFlight_WithDepartureAirportFilter() throws GalacticsAirlinesException {
+    void testSearchFlight_WithDepartureAirportFilter() throws FlybookException {
         Airport airport1 = new Airport();
         airport1.setAirportName("CDG");
         Flight flight1 = new Flight();
@@ -176,7 +176,7 @@ public class FlightServiceImplTest {
     }
 
     @Test
-    void testSearchFlight_WithArrivalAirportFilter() throws GalacticsAirlinesException {
+    void testSearchFlight_WithArrivalAirportFilter() throws FlybookException {
         Airport airport1 = new Airport();
         airport1.setAirportName("CDG");
         Flight flight1 = new Flight();
