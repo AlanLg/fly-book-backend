@@ -1,0 +1,25 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# IntelliJ IDEA
+.idea/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Maven
+target/
+mvnw
+mvnw.cmd
+
+# Spring Boot
+*.iml
+spring-boot-starter/target/
+spring-boot-starter-*/target/
+!spring-boot-starter/src/main/
+!spring-boot-starter/src/test/
