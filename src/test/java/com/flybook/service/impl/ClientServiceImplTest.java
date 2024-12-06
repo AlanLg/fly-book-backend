@@ -50,6 +50,16 @@ public class ClientServiceImplTest {
     }
 
     @Test
+    public void addClientThrowsExceptionWhenPasswordsDoNotMatch() {
+        ClientDTORequest clientDTORequest = generator.nextObject(ClientDTORequest.class);
+        clientDTORequest.setPassword("password123");
+        clientDTORequest.setConfirmPassword("differentPassword");
+
+        assertThrows(FlybookException.class, () -> clientService.addClient(clientDTORequest));
+    }
+
+
+    @Test
     public void updateClientSuccessfully() {
         ClientDTORequest clientDTORequest = generator.nextObject(ClientDTORequest.class);
         clientDTORequest.setEmail("test@test.com");

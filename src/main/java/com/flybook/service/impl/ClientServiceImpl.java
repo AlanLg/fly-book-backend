@@ -12,6 +12,7 @@ import com.flybook.repository.ClientRepository;
 import com.flybook.service.ClientService;
 import com.flybook.utils.ClientValidationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,9 +22,11 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClientServiceImpl(ClientRepository clientRepository) {
+    public ClientServiceImpl(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -33,11 +36,11 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientDTOResponse addClient(ClientDTORequest clientDTORequest) throws FlybookException {
-        Client createdClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
-
-        if (!ClientValidationUtils.isValidClient(createdClient)) {
+        if (!ClientValidationUtils.isValidClientDTORequest(clientDTORequest)) {
             throw new FlybookException("missing elements in the JSON");
         }
+
+        Client createdClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
         Optional<Client> existingClient = clientRepository.findByEmail(createdClient.getEmail());
 
@@ -47,6 +50,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         log.info("created client: {}", createdClient);
+        createdClient.setPassword(passwordEncoder.encode(createdClient.getPassword()));
         Client client = clientRepository.save(createdClient);
         return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(client);
     }
