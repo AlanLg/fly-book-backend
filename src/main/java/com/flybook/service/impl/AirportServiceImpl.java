@@ -44,7 +44,7 @@ public class AirportServiceImpl implements AirportService {
         List<Airport> targetAirports = airportRepository.findAll();
 
         if (targetAirports.isEmpty()) {
-            throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
+            throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
 
         List<String> airports = targetAirports.stream()
