@@ -1,16 +1,20 @@
 package com.flybook.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@Getter
 public class FlybookException extends RuntimeException {
+    private final HttpStatus httpStatus;
 
-    public FlybookException(String message) {
+    public FlybookException(String message, HttpStatus httpStatus) {
         super(message);
+        this.httpStatus = httpStatus;
     }
 
-    public FlybookException(String message, Throwable cause) {
+    public FlybookException(String message, Throwable cause, HttpStatus httpStatus) {
         super(message, cause);
+        this.httpStatus = httpStatus;
     }
+
 }

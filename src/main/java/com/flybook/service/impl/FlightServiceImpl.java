@@ -1,6 +1,5 @@
 package com.flybook.service.impl;
 
-import com.flybook.exception.FlightNotFoundException;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.FlightMapper;
 import com.flybook.model.dto.request.FilterFlightDTORequest;
@@ -16,6 +15,7 @@ import com.flybook.service.FlightService;
 import com.flybook.utils.FlightValidationUtils;
 import com.flybook.utils.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class FlightServiceImpl implements FlightService {
 
         if (flightDTORequest.getArrivalAirport().equals(flightDTORequest.getDepartureAirport())) {
             log.info("departure and arrival airport cannot be the same");
-            throw new FlybookException("departure and arrival airport cannot be the same");
+            throw new FlybookException("departure and arrival airport cannot be the same", HttpStatus.CONFLICT);
         }
 
         Optional<Flight> existingFlight = flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(
@@ -61,7 +61,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightDTOResponse updateFlight(Long id, FlightDTORequest flightDTORequest) throws FlybookException {
         if (id == null || flightRepository.findById(id).isEmpty()) {
-            throw new FlybookException("No flight found in the database");
+            throw new FlybookException("No flight found in the database", HttpStatus.NOT_FOUND);
         }
 
         Flight updatedFlight = linkAndSaveAssociatedEntities(flightDTORequest);;
@@ -74,7 +74,7 @@ public class FlightServiceImpl implements FlightService {
         Flight updatedFlight = FlightMapper.INSTANCE.flightDTORequestToFlightEntity(flightDTORequest);
 
         if (!FlightValidationUtils.verifyElementInEntityToSave(updatedFlight)) {
-            throw new FlybookException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Airport departureAirport = airportService.findOrSaveAirport(updatedFlight.getDepartureAirport());
@@ -89,18 +89,18 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public void deleteFlight(Long id) {
         if (id == null) {
-            throw new FlybookException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Flight flight = flightRepository.findById(id).orElse(null);
         if (flight != null ) {
             List<Reservation> reservationsOfFlight = reservationRepository.findByFlight_FlightId(flight.getFlightId()).orElse(null);
             if (reservationsOfFlight != null && !reservationsOfFlight.isEmpty()){
-                throw new FlybookException("Impossible to delete flight because some reservations are links with this flight");
+                throw new FlybookException("Impossible to delete flight because some reservations are links with this flight", HttpStatus.CONFLICT);
             }
             flightRepository.delete(flight);
         } else {
-            throw new FlybookException("No flight in the data base");
+            throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -122,19 +122,19 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public Flight getFlightForReservation(ReservationDTORequest reservationDTORequest) {
         return flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
-        ).orElseThrow(FlightNotFoundException::new);
+        ).orElseThrow(() -> new FlybookException("Aucun avion en bdd", HttpStatus.NOT_FOUND));
     }
 
     @Override
     public FlightDTOResponse getFlight(Long id) throws FlybookException {
         if (id == null) {
-            throw new FlybookException("missing elements in the JSON");
+            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Flight targetFlight = flightRepository.findById(id).orElse(null);
 
         if (targetFlight == null) {
-            throw new FlybookException("No flight in the data base");
+            throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
         return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(targetFlight);
     }

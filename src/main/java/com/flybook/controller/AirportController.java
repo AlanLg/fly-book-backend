@@ -1,7 +1,6 @@
 package com.flybook.controller;
 
 import com.flybook.exception.FlybookException;
-import com.flybook.exception.FlybookFunctionalException;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
 import com.flybook.service.AirportService;

@@ -15,6 +15,7 @@ import com.flybook.service.ReservationService;
 import com.flybook.utils.ReservationValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -43,14 +44,14 @@ public class ReservationServiceImpl implements ReservationService {
 
         int numberOfSeatsForFlight = reservationRepository.countDistinctByFlightAndDepartureDate(flight, reservationDTORequest.getDepartureDate());
         if (numberOfSeatsForFlight == flight.getNumberOfSeats()) {
-            throw new FlybookException("Il n'y a plus de place pour ce vol");
+            throw new FlybookException("Il n'y a plus de place pour ce vol", HttpStatus.CONFLICT);
         }
 
         Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityToReservationEntity(client, flight, reservationDTORequest.getDepartureDate());
         log.info("mapping de la réservation");
 
         if (!ReservationValidationUtils.isValidReservation(createdReservation)) {
-            throw new FlybookException("Il manque un élément dans la réservation");
+            throw new FlybookException("Il manque un élément dans la réservation", HttpStatus.BAD_REQUEST);
         }
 
         Optional<Reservation> existingReservation = reservationRepository
