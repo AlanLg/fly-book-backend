@@ -23,7 +23,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/add/with-existing-client")
+    @PostMapping("/add")
     public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) throws FlybookException {
         return ResponseEntity.ok(reservationService.createReservation(reservationDTORequestWithExistingClient));
     }
