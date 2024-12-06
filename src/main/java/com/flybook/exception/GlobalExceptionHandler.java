@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex) {
         ErrorDetails errorDetails = new ErrorDetails(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Une erreur interne est survenue."
+                ex.getMessage()
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
