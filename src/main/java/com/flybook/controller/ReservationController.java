@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/reservation")
-@OpenAPIDefinition(info = @Info(title = "Galatics Airlines API", version = "v1"))
-@SecurityRequirement(name = "basicAuth")
 public class ReservationController {
 
     private final ReservationService reservationService;

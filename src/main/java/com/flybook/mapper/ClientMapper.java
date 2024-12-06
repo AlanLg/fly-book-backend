@@ -16,6 +16,7 @@ public interface ClientMapper {
     @Mapping(source = "firstname", target = "firstname")
     @Mapping(source = "lastname", target = "lastname")
     @Mapping(source = "email", target = "email")
+    @Mapping(target = "roles", constant = "ROLE_USER")
     Client clientDTORequestToClientEntity(ClientDTORequest clientDTORequest);
 
     @Mapping(source = "firstname", target = "firstname")

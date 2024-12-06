@@ -18,7 +18,7 @@ public class AuthDTORequest {
     @Email(message = "Invalid email")
     @Size(min = 3, message = "Email must be at least 3 chars")
     private String email;
-    @Schema(example = "password")
+    @Schema(example = "secretpassword")
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 chars")
     private String password;

@@ -23,19 +23,22 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/client")
 @RequiredArgsConstructor
-@OpenAPIDefinition(info = @Info(title = "Galatics Airlines API", version = "v1"))
-@SecurityRequirement(name = "basicAuth")
 public class ClientController {
 
     private final JwtService jwtService;
     private final ClientService clientService;
     private final AuthenticationManager authenticationManager;
 
-    @PostMapping("/generateToken")
+    @PostMapping("/generate-token")
     public String authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
+        log.info("fetching token for user {}", authRequest);
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
+
+        log.info("authentication {}", authentication);
+
         if (authentication.isAuthenticated()) {
             return jwtService.generateToken(authRequest.getEmail());
         } else {

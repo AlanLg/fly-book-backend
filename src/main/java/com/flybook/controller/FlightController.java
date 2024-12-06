@@ -18,8 +18,6 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/flight")
-@OpenAPIDefinition(info = @Info(title = "Galatics Airlines API", version = "v1"))
-@SecurityRequirement(name = "basicAuth")
 public class FlightController {
     private final FlightService flightService;
 

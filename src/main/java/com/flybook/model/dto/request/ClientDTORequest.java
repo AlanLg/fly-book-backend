@@ -22,11 +22,11 @@ public class ClientDTORequest {
     @Email(message = "Invalid email")
     @Size(min = 3, message = "Email must be at least 3 chars")
     private String email;
-    @Schema(example = "********")
+    @Schema(example = "secretpassword")
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 chars")
     private String password;
-    @Schema(example = "********")
+    @Schema(example = "secretpassword")
     @NotBlank(message = "Confirm password is mandatory")
     @Size(min = 8, message = "Confirm password must be at least 8 chars")
     private String confirmPassword;
