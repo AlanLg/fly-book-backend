@@ -23,4 +23,5 @@ public interface FlightService {
     Flight getFlightForReservation(ReservationDTORequest reservationDTORequest);
 
     FlightDTOResponse getFlight(Long id) throws FlybookException;
+    List<FlightDTOResponse> getAllFlight() throws FlybookException;
 }

@@ -139,6 +139,17 @@ public class FlightServiceImpl implements FlightService {
         return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(targetFlight);
     }
 
+    @Override
+    public List<FlightDTOResponse> getAllFlight() throws FlybookException {
+        List<Flight> targetFlights = flightRepository.findAll();
+
+        if (targetFlights.isEmpty()) {
+            throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
+        }
+
+        return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(targetFlights);
+    }
+
     private List<Flight> filterByDepartureAirport(List<Flight> flights, String departureAirport) {
         return flights.stream()
                 .filter(flight -> flight.getDepartureAirport().getAirportName().equalsIgnoreCase(departureAirport))
