@@ -18,4 +18,6 @@ public class Flight {
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "arrival_airport_id")
     private Airport arrivalAirport;
+    private double price;
+    private int numberOfSeats;
 }

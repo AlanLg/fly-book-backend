@@ -15,10 +15,14 @@ public interface FlightMapper {
 
     @Mapping(source = "departureAirport", target = "departureAirport")
     @Mapping(source = "arrivalAirport", target = "arrivalAirport")
+    @Mapping(source = "numberOfSeats", target = "numberOfSeats")
+    @Mapping(source = "price", target = "price")
     Flight flightDTORequestToFlightEntity(FlightDTORequest flightDTORequest);
 
     @Mapping(source = "departureAirport", target = "departureAirport")
     @Mapping(source = "arrivalAirport", target = "arrivalAirport")
+    @Mapping(source = "numberOfSeats", target = "numberOfSeats")
+    @Mapping(source = "price", target = "price")
     FlightDTOResponse flightEntityToFlightDTOResponse(Flight flight);
 
     List<FlightDTOResponse> flightEntitiesToFlightDTOResponses(List<Flight> flights);

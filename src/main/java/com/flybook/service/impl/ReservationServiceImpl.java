@@ -39,9 +39,14 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, Client client) {
         log.info("Chercher un vol");
         Flight flight = flightService.getFlightForReservation(reservationDTORequest);
-        log.info("vol trouve");
+        log.info("Vol trouvé");
 
-        Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityToReservationEntity(client, flight, reservationDTORequest.getDepartureDateTime());
+        int numberOfSeatsForFlight = reservationRepository.countDistinctByFlightAndDepartureDate(flight, reservationDTORequest.getDepartureDate());
+        if (numberOfSeatsForFlight == flight.getNumberOfSeats()) {
+            throw new FlybookException("Il n'y a plus de place pour ce vol");
+        }
+
+        Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityToReservationEntity(client, flight, reservationDTORequest.getDepartureDate());
         log.info("mapping de la réservation");
 
         if (!ReservationValidationUtils.isValidReservation(createdReservation)) {

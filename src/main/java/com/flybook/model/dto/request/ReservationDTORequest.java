@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -23,6 +23,6 @@ public abstract class ReservationDTORequest {
     @NotBlank(message = "Airport name is mandatory")
     @Schema(example = "JDK")
     private String arrivalAirport;
-    @Schema(example = "2024-04-18T11:00:00.000Z")
-    private LocalDateTime departureDateTime;
+    @Schema(example = "2024-04-18")
+    private LocalDate departureDate;
 }
