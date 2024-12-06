@@ -1,6 +1,7 @@
 package com.flybook.service.impl;
 
 import com.flybook.exception.FlybookException;
+import com.flybook.exception.FlybookFunctionalException;
 import com.flybook.mapper.AirportMapper;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
@@ -10,6 +11,7 @@ import com.flybook.service.AirportService;
 import com.flybook.utils.AirportValidationUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +35,17 @@ public class AirportServiceImpl implements AirportService {
             throw new FlybookException("No flight in the data base");
         }
         return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(targetAirport);
+    }
+
+    @Override
+    public List<AirportDTOResponse> getAllAirport() throws FlybookException {
+        List<Airport> targetAirports = airportRepository.findAll();
+
+        if (targetAirports.isEmpty()) {
+            throw new FlybookException("No flight in the data base");
+        }
+
+        return AirportMapper.INSTANCE.airportEntitiesToAirportDTOResponses(targetAirports);
     }
 
     @Override

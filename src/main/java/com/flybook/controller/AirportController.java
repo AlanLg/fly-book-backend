@@ -1,6 +1,7 @@
 package com.flybook.controller;
 
 import com.flybook.exception.FlybookException;
+import com.flybook.exception.FlybookFunctionalException;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
 import com.flybook.service.AirportService;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -27,6 +30,11 @@ public class AirportController {
     @GetMapping("/get/{id}")
     public ResponseEntity<AirportDTOResponse> getAirport(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(airportService.getAirport(id));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<AirportDTOResponse>> getAllAirport() throws FlybookException {
+        return ResponseEntity.ok(airportService.getAllAirport());
     }
 
     @PostMapping("/add")
