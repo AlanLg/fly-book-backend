@@ -10,7 +10,7 @@ import java.util.List;
 @Transactional
 public interface AirportService {
     AirportDTOResponse getAirport(Long id) throws FlybookException;
-    List<AirportDTOResponse> getAllAirport() throws FlybookException;
+    List<String> getAllAirport() throws FlybookException;
     AirportDTOResponse addAirport(AirportDTORequest airportDTORequest) throws FlybookException;
     AirportDTOResponse updateAirport(Long id, AirportDTORequest airportDTORequest) throws FlybookException;
     void deleteAirport(Long id) throws FlybookException;

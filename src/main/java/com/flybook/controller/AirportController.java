@@ -30,7 +30,7 @@ public class AirportController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<AirportDTOResponse>> getAllAirport() throws FlybookException {
+    public ResponseEntity<List<String>> getAllAirport() throws FlybookException {
         return ResponseEntity.ok(airportService.getAllAirport());
     }
 

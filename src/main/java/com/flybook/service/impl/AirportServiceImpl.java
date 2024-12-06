@@ -11,8 +11,10 @@ import com.flybook.utils.AirportValidationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AirportServiceImpl implements AirportService {
@@ -38,14 +40,19 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
-    public List<AirportDTOResponse> getAllAirport() throws FlybookException {
+    public List<String> getAllAirport() throws FlybookException {
         List<Airport> targetAirports = airportRepository.findAll();
 
         if (targetAirports.isEmpty()) {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
 
-        return AirportMapper.INSTANCE.airportEntitiesToAirportDTOResponses(targetAirports);
+        List<String> airports = targetAirports.stream()
+                .map(Airport::getAirportName)
+                .toList();
+
+
+        return airports;
     }
 
     @Override
