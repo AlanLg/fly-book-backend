@@ -30,7 +30,7 @@ public class FlightController {
         return ResponseEntity.ok(flightService.getFlight(id));
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/all")
     public ResponseEntity<List<FlightDTOResponse>> getAllFlight() throws FlybookException {
         return ResponseEntity.ok(flightService.getAllFlight());
     }
