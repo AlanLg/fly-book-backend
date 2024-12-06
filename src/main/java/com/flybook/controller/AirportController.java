@@ -16,8 +16,6 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/airport")
-@OpenAPIDefinition(info = @Info(title = "Galatics Airlines API", version = "v1"))
-@SecurityRequirement(name = "basicAuth")
 public class AirportController {
 
     private final AirportService airportService;

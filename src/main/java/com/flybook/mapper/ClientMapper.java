@@ -6,6 +6,8 @@ import com.flybook.model.entity.Client;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Mapper
 public interface ClientMapper {
@@ -14,6 +16,7 @@ public interface ClientMapper {
     @Mapping(source = "firstname", target = "firstname")
     @Mapping(source = "lastname", target = "lastname")
     @Mapping(source = "email", target = "email")
+    @Mapping(target = "roles", constant = "ROLE_USER")
     Client clientDTORequestToClientEntity(ClientDTORequest clientDTORequest);
 
     @Mapping(source = "firstname", target = "firstname")

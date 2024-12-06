@@ -1,27 +1,49 @@
 package com.flybook.controller;
 
 import com.flybook.exception.FlybookException;
+import com.flybook.model.dto.request.AuthDTORequest;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
 import com.flybook.service.ClientService;
+import com.flybook.service.JwtService;
+import org.springframework.security.authentication.AuthenticationManager;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/client")
-@OpenAPIDefinition(info = @Info(title = "Galatics Airlines API", version = "v1"))
-@SecurityRequirement(name = "basicAuth")
+@RequiredArgsConstructor
 public class ClientController {
-    private final ClientService clientService;
 
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
+    private final JwtService jwtService;
+    private final ClientService clientService;
+    private final AuthenticationManager authenticationManager;
+
+    @PostMapping("/generate-token")
+    public String authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
+        log.info("fetching token for user {}", authRequest);
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+        );
+
+        log.info("authentication {}", authentication);
+
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(authRequest.getEmail());
+        } else {
+            throw new UsernameNotFoundException("Invalid user request");
+        }
     }
 
     @GetMapping("/get/{id}")

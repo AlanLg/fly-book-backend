@@ -9,24 +9,24 @@ import com.flybook.model.entity.Client;
 import com.flybook.repository.ClientRepository;
 import com.flybook.service.ClientService;
 import com.flybook.utils.ClientValidationUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public ClientServiceImpl(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
-        this.clientRepository = clientRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public ClientDTOResponse getClient(Long id) {
