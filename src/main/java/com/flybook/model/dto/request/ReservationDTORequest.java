@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public abstract class ReservationDTORequest {
+public class ReservationDTORequest {
     @Schema(example = "john.doe@gmail.com")
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Invalid email")
@@ -25,4 +25,6 @@ public abstract class ReservationDTORequest {
     private String arrivalAirport;
     @Schema(example = "2024-04-18")
     private LocalDate departureDate;
+    @Schema(example = "1")
+    private int nbLuggage;
 }

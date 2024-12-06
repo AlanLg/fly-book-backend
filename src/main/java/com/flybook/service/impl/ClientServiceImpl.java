@@ -3,7 +3,7 @@ package com.flybook.service.impl;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ClientMapper;
 import com.flybook.model.dto.request.ClientDTORequest;
-import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
+import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
 import com.flybook.model.entity.Client;
 import com.flybook.repository.ClientRepository;
@@ -11,9 +11,6 @@ import com.flybook.service.ClientService;
 import com.flybook.utils.ClientValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,8 +83,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client getClientForReservation(ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) {
-        return clientRepository.findByEmail(reservationDTORequestWithExistingClient.getEmail())
+    public Client getClientForReservation(ReservationDTORequest reservationDTORequest) {
+        return clientRepository.findByEmail(reservationDTORequest.getEmail())
                 .orElseThrow(() -> new FlybookException("No client in the data base", HttpStatus.NOT_FOUND)
                 );
     }

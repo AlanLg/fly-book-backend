@@ -1,12 +1,9 @@
 package com.flybook.controller;
 
 import com.flybook.exception.FlybookException;
-import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
+import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.service.ReservationService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +21,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/add")
-    public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) throws FlybookException {
-        return ResponseEntity.ok(reservationService.createReservation(reservationDTORequestWithExistingClient));
+    public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequest reservationDTORequest) throws FlybookException {
+        return ResponseEntity.ok(reservationService.createReservation(reservationDTORequest));
     }
 }

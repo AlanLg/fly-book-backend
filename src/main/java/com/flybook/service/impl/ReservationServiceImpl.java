@@ -3,7 +3,6 @@ package com.flybook.service.impl;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ReservationMapper;
 import com.flybook.model.dto.request.ReservationDTORequest;
-import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.model.entity.Client;
 import com.flybook.model.entity.Flight;
@@ -30,7 +29,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final FlightService flightService;
 
     @Override
-    public ReservationDTOResponse createReservation(ReservationDTORequestWithExistingClient reservationDTORequest) {
+    public ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest) {
         Client client = clientService.getClientForReservation(reservationDTORequest);
         return finaliserReservation(reservationDTORequest, client);
     }
@@ -43,7 +42,8 @@ public class ReservationServiceImpl implements ReservationService {
             throw new FlybookException("The flight is full", HttpStatus.CONFLICT);
         }
 
-        Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityToReservationEntity(client, flight, reservationDTORequest.getDepartureDate());
+
+        Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(client, flight, reservationDTORequest);
         if (!ReservationValidationUtils.isValidReservation(createdReservation)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }

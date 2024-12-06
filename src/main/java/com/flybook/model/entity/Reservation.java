@@ -21,4 +21,5 @@ public class Reservation {
     @JoinColumn(name = "client_id")
     private Client client;
     private LocalDate departureDate;
+    private int nbLuggage;
 }

@@ -11,4 +11,5 @@ public class ReservationDTOResponse {
     private FlightDTOResponse flight;
     private ClientDTOResponse client;
     private LocalDate departureDate;
+    private int nbLuggage;
 }

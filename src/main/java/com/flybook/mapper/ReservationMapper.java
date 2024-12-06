@@ -1,5 +1,6 @@
 package com.flybook.mapper;
 
+import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.model.entity.Client;
 import com.flybook.model.entity.Flight;
@@ -21,11 +22,13 @@ public interface ReservationMapper {
     @Mapping(source = "flight.departureAirport", target = "flight.departureAirport")
     @Mapping(source = "flight.arrivalAirport", target = "flight.arrivalAirport")
     @Mapping(source = "departureDate", target = "departureDate")
+    @Mapping(source = "nbLuggage", target = "nbLuggage")
     ReservationDTOResponse reservationEntityToReservationDTOResponse(Reservation reservation);
 
 
     @Mapping(source = "client", target = "client")
     @Mapping(source = "flight", target = "flight")
-    @Mapping(source = "departureDate", target = "departureDate")
-    Reservation clientEntityAndFlightEntityToReservationEntity(Client client, Flight flight, LocalDate departureDate);
+    @Mapping(source = "reservationDTORequest.departureDate", target = "departureDate")
+    @Mapping(source = "reservationDTORequest.nbLuggage", target = "nbLuggage")
+    Reservation clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(Client client, Flight flight, ReservationDTORequest reservationDTORequest);
 }

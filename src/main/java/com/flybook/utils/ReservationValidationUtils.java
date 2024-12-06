@@ -10,7 +10,7 @@ public class ReservationValidationUtils {
     public static boolean isValidReservation(Reservation reservation) {
         return reservation != null &&
                 isValidClient(reservation.getClient()) &&
-                Objects.nonNull(reservation.getFlight()
-                );
+                Objects.nonNull(reservation.getFlight()) &&
+                reservation.getNbLuggage() >= 0;
     }
 }
