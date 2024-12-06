@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface ClientService extends UserDetailsService {
+public interface ClientService {
     ClientDTOResponse getClient(Long id);
     ClientDTOResponse addClient(ClientDTORequest clientDTORequest);
     ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest);

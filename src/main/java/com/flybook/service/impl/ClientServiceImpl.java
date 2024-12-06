@@ -2,7 +2,6 @@ package com.flybook.service.impl;
 
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ClientMapper;
-import com.flybook.model.ClientInfoDetails;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequestWithExistingClient;
 import com.flybook.model.dto.response.ClientDTOResponse;
@@ -10,6 +9,7 @@ import com.flybook.model.entity.Client;
 import com.flybook.repository.ClientRepository;
 import com.flybook.service.ClientService;
 import com.flybook.utils.ClientValidationUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,14 +20,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    @Autowired
-    private ClientRepository clientRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final ClientRepository clientRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ClientDTOResponse getClient(Long id) {
@@ -94,13 +93,5 @@ public class ClientServiceImpl implements ClientService {
                         return new FlybookException("Client pas trouve", HttpStatus.NOT_FOUND);
                     }
                 );
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Client> client = clientRepository.findByEmail(email);
-
-        return client.map(ClientInfoDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found" + email));
     }
 }
