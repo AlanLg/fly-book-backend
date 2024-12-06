@@ -26,7 +26,7 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public AirportDTOResponse getAirport(Long id) throws FlybookException {
         if (id == null) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Airport targetAirport = airportRepository.findById(id).orElse(null);
@@ -53,7 +53,7 @@ public class AirportServiceImpl implements AirportService {
         Airport createdAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
         if (!AirportValidationUtils.isValidAirport(createdAirport)) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Optional<Airport> existingAirport = airportRepository.findByAirportName(createdAirport.getAirportName());
@@ -68,13 +68,13 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public AirportDTOResponse updateAirport(Long id, AirportDTORequest airportDTORequest) throws FlybookException {
         if (id == null || airportRepository.findById(id).isEmpty()) {
-            throw new FlybookException("Aucun airport en bdd", HttpStatus.NOT_FOUND);
+            throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
 
         Airport updatedAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
         if (!AirportValidationUtils.isValidAirport(updatedAirport)) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         updatedAirport.setAirportId(id);
@@ -85,14 +85,14 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public void deleteAirport(Long id) throws FlybookException {
         if (id == null) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Airport airport = airportRepository.findById(id).orElse(null);
         if (airport != null) {
             airportRepository.delete(airport);
         } else {
-            throw new FlybookException("Aucun aeroport en base", HttpStatus.NOT_FOUND);
+            throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
     }
 

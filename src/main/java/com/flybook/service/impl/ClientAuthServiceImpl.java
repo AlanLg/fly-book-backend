@@ -22,6 +22,6 @@ public class ClientAuthServiceImpl implements UserDetailsService {
         Optional<Client> client = clientRepository.findByEmail(email);
 
         return client.map(ClientInfoDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found" + email));
+                .orElseThrow(() -> new UsernameNotFoundException("No client in the data base" + email));
     }
 }

@@ -36,7 +36,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDTOResponse addClient(ClientDTORequest clientDTORequest) throws FlybookException {
         if (!ClientValidationUtils.isValidClientDTORequest(clientDTORequest)) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Client createdClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
@@ -57,13 +57,13 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest) throws FlybookException {
         if (id == null || clientRepository.findById(id).isEmpty()) {
-            throw new FlybookException("Aucun client en bdd", HttpStatus.NOT_FOUND);
+            throw new FlybookException("No client in the data base", HttpStatus.NOT_FOUND);
         }
 
         Client updatedClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
         if (!ClientValidationUtils.isValidClient(updatedClient)) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         updatedClient.setId(id);
@@ -74,24 +74,21 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void deleteClient(Long id) throws FlybookException {
         if (id == null) {
-            throw new FlybookException("missing elements in the JSON", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
         Client client = clientRepository.findById(id).orElse(null);
         if (client != null) {
             clientRepository.delete(client);
         } else {
-            throw new FlybookException("Aucun client en base", HttpStatus.NOT_FOUND);
+            throw new FlybookException("No client in the data base", HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
     public Client getClientForReservation(ReservationDTORequestWithExistingClient reservationDTORequestWithExistingClient) {
         return clientRepository.findByEmail(reservationDTORequestWithExistingClient.getEmail())
-                .orElseThrow(() -> {
-                        log.info("Client pas trouve");
-                        return new FlybookException("Client pas trouve", HttpStatus.NOT_FOUND);
-                    }
+                .orElseThrow(() -> new FlybookException("No client in the data base", HttpStatus.NOT_FOUND)
                 );
     }
 }

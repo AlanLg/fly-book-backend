@@ -31,13 +31,13 @@ public class ClientController {
 
     @PostMapping("/generate-token")
     public String authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
-        log.info("fetching token for user {}", authRequest);
+        log.info("Fetching token for user {}", authRequest);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
 
-        log.info("authentication {}", authentication);
+        log.info("Authentication {}", authentication);
 
         if (authentication.isAuthenticated()) {
             return jwtService.generateToken(authRequest.getEmail());

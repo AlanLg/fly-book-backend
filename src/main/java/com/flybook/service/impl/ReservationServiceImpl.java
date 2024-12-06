@@ -31,39 +31,29 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationDTOResponse createReservation(ReservationDTORequestWithExistingClient reservationDTORequest) {
-        log.info("Création d'une réservation avec un client existant");
         Client client = clientService.getClientForReservation(reservationDTORequest);
-        log.info("Client trouvé : {}", client);
         return finaliserReservation(reservationDTORequest, client);
     }
 
     private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, Client client) {
-        log.info("Chercher un vol");
         Flight flight = flightService.getFlightForReservation(reservationDTORequest);
-        log.info("Vol trouvé");
 
         int numberOfSeatsForFlight = reservationRepository.countDistinctByFlightAndDepartureDate(flight, reservationDTORequest.getDepartureDate());
         if (numberOfSeatsForFlight == flight.getNumberOfSeats()) {
-            throw new FlybookException("Il n'y a plus de place pour ce vol", HttpStatus.CONFLICT);
+            throw new FlybookException("The flight is full", HttpStatus.CONFLICT);
         }
 
         Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityToReservationEntity(client, flight, reservationDTORequest.getDepartureDate());
-        log.info("mapping de la réservation");
-
         if (!ReservationValidationUtils.isValidReservation(createdReservation)) {
-            throw new FlybookException("Il manque un élément dans la réservation", HttpStatus.BAD_REQUEST);
+            throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Reservation> existingReservation = reservationRepository
-                .findByFlight_FlightIdAndClient_Id(createdReservation.getFlight().getFlightId(), createdReservation.getClient().getId());
-        log.info("recherche de la réservation existante");
+        Optional<Reservation> existingReservation = reservationRepository.findByFlight_FlightIdAndClient_Id(createdReservation.getFlight().getFlightId(), createdReservation.getClient().getId());
 
         if (existingReservation.isPresent()) {
-            log.info("trouve un reservation existante");
             return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(existingReservation.get());
         }
 
-        log.info("sauvegarde de la reservation creee");
         Reservation reservation = reservationRepository.save(createdReservation);
 
         return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(reservation);
