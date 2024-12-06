@@ -29,7 +29,7 @@ public class ClientController {
     private final ClientService clientService;
     private final AuthenticationManager authenticationManager;
 
-    @PostMapping("/generate-token")
+    @PostMapping("/login")
     public String authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
         log.info("Fetching token for user {}", authRequest);
 
@@ -51,7 +51,7 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getClient(id));
     }
 
-    @PostMapping("/add")
+    @PostMapping("/signup")
     public ResponseEntity<ClientDTOResponse> addClient(@Valid @RequestBody ClientDTORequest clientDTORequest) throws FlybookException {
         log.info("Adding client: {}", clientDTORequest.toString());
         return ResponseEntity.ok(clientService.addClient(clientDTORequest));
