@@ -6,6 +6,7 @@ import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
 import com.flybook.service.ClientService;
 import com.flybook.service.JwtService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,17 +32,23 @@ public class ClientController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthDTORequest authRequest) {
         log.info("Fetching token for user {}", authRequest);
+        Authentication authentication = null;
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-        );
+        try {
+             authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            log.info("Bad credentials: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
+        }
 
         log.info("Authentication {}", authentication);
 
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getEmail());
+            return ResponseEntity.ok(jwtService.generateToken(authRequest.getEmail()));
         } else {
             throw new UsernameNotFoundException("Invalid user request");
         }
