@@ -6,6 +6,7 @@ import com.flybook.service.CurrencyService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.io.StringReader;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CurrencyServiceImpl implements CurrencyService {
 
     private static final long ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -30,10 +32,13 @@ public class CurrencyServiceImpl implements CurrencyService {
                 RestTemplate restTemplate = new RestTemplate();
                 String xmlData = restTemplate.getForObject(URL, String.class);
 
+                log.info("xml data: {}", xmlData);
+
                 if (xmlData != null) {
                     JAXBContext jaxbContext = JAXBContext.newInstance(Envelope.class);
                     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                     Envelope unmarshal = (Envelope) unmarshaller.unmarshal(new StringReader(xmlData));
+                    log.info("xml data parsed: {}", unmarshal);
                     List<Currency> currencies = unmarshal.getCubeWrapper().getTimeCube().getCurrencies();
                     this.currencies = currencies;
                     this.lastUpdateTime = System.currentTimeMillis();
