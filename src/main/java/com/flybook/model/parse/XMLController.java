@@ -1,6 +1,5 @@
-package com.flybook.controller;
+package com.flybook.model.parse;
 
-import com.flybook.config.Envelope;
 import com.flybook.service.impl.XMLService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

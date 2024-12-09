@@ -1,6 +1,6 @@
 package com.flybook.service.impl;
 
-import com.flybook.config.Envelope;
+import com.flybook.model.parse.Envelope;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;

@@ -1,4 +1,4 @@
-package com.flybook.config;
+package com.flybook.model.parse;
 
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;

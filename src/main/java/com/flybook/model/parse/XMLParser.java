@@ -1,4 +1,4 @@
-package com.flybook.config;
+package com.flybook.model.parse;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -6,12 +6,6 @@ import jakarta.xml.bind.Unmarshaller;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.StringReader;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import org.springframework.web.client.RestTemplate;
 
 public class XMLParser {
     public static void main(String[] args) {
