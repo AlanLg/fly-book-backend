@@ -12,5 +12,4 @@ public interface ClientService {
     ClientDTOResponse addClient(ClientDTORequest clientDTORequest);
     ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest);
     void deleteClient(Long id);
-    Client getClientForReservation(ReservationDTORequest reservationDTORequest);
 }

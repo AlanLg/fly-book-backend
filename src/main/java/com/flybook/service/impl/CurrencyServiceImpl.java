@@ -6,6 +6,7 @@ import com.flybook.service.CurrencyService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,7 +30,6 @@ public class CurrencyServiceImpl implements CurrencyService {
     private List<Currency> currencies;
 
     public List<Currency> fetchAndParseCurrencyXML() {
-
         if (System.currentTimeMillis() > this.lastUpdateTime + ONE_DAY_IN_MS) {
             try {
                 RestTemplate restTemplate = new RestTemplate();
@@ -52,6 +55,10 @@ public class CurrencyServiceImpl implements CurrencyService {
             }
         }
         return this.currencies;
+    }
+
+    public Map<String, Double> getCurrencies() {
+        return currencies.stream().collect(Collectors.toMap(Currency::getCurrency, currency -> Double.valueOf(currency.getRate())));
     }
 }
 

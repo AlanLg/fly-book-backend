@@ -82,7 +82,6 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    @Override
     public Client getClientForReservation(ReservationDTORequest reservationDTORequest) {
         return clientRepository.findByEmail(reservationDTORequest.getEmail())
                 .orElseThrow(() -> new FlybookException("No client in the data base", HttpStatus.NOT_FOUND)

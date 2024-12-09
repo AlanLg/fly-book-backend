@@ -6,6 +6,7 @@ import com.flybook.model.dto.request.FilterFlightDTORequest;
 import com.flybook.model.dto.request.FlightDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.FlightDTOResponse;
+import com.flybook.model.entity.Airplane;
 import com.flybook.model.entity.Airport;
 import com.flybook.model.entity.Flight;
 import com.flybook.model.entity.Reservation;
@@ -26,13 +27,14 @@ import java.util.Optional;
 public class FlightServiceImpl implements FlightService {
 
     private final AirportServiceImpl airportService;
+    private final AirplaneServiceImpl airplaneService;
     private final FlightRepository flightRepository;
-
     private final ReservationRepository reservationRepository;
 
 
-    public FlightServiceImpl(AirportServiceImpl airportService, FlightRepository flightRepository, ReservationRepository reservationRepository) {
+    public FlightServiceImpl(AirportServiceImpl airportService, AirplaneServiceImpl airplaneService, FlightRepository flightRepository, ReservationRepository reservationRepository) {
         this.airportService = airportService;
+        this.airplaneService = airplaneService;
         this.flightRepository = flightRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -77,6 +79,9 @@ public class FlightServiceImpl implements FlightService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
+        Airplane airplane = airplaneService.findOrSaveAirplane(updatedFlight.getAirplane());
+        updatedFlight.setAirplane(airplane);
+
         Airport departureAirport = airportService.findOrSaveAirport(updatedFlight.getDepartureAirport());
         updatedFlight.setDepartureAirport(departureAirport);
 
@@ -119,7 +124,6 @@ public class FlightServiceImpl implements FlightService {
         return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(flights);
     }
 
-    @Override
     public Flight getFlightForReservation(ReservationDTORequest reservationDTORequest) {
         return flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
         ).orElseThrow(() -> new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND));
