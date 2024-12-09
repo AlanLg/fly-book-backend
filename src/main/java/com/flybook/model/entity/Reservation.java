@@ -22,7 +22,7 @@ public class Reservation {
     @JoinColumn(name = "client_id")
     private Client client;
     @OneToMany(mappedBy = "reservation")
-    private List<Profil> profils;
+    private List<Profile> profiles;
     private LocalDate departureDate;
     private int nbLuggage;
     private double priceOfReservation;

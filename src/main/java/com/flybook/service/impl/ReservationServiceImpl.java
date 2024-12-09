@@ -8,9 +8,8 @@ import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.model.entity.Client;
 import com.flybook.model.entity.Flight;
-import com.flybook.model.entity.Profil;
+import com.flybook.model.entity.Profile;
 import com.flybook.model.entity.Reservation;
-import com.flybook.model.parse.Currency;
 import com.flybook.repository.ProfilRepository;
 import com.flybook.repository.ReservationRepository;
 import com.flybook.service.ReservationService;
@@ -64,43 +63,40 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation reservation = reservationRepository.save(createdReservation);
 
-        List<Profil> profiles = new ArrayList<>();
+        List<Profile> profiles = new ArrayList<>();
         for (ProfilDTORequest profilDTORequest : reservationDTORequest.getProfilDTORequestList()) {
-            Profil profil = ProfilMapper.INSTANCE.profilDTORequestToProfilEntity(profilDTORequest);
-            profil.setReservation(reservation);
-            profiles.add(profilRepository.save(profil));
+            Profile profile = ProfilMapper.INSTANCE.profilDTORequestToProfilEntity(profilDTORequest);
+            profile.setReservation(reservation);
+            profiles.add(profilRepository.save(profile));
         }
-        reservation.setProfils(profiles);
-        reservation.setPriceOfReservation(setTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
+        reservation.setProfiles(profiles);
+        reservation.setPriceOfReservation(getTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
 
         return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(reservation);
     }
 
-    private double setTotalPriceOfReservation(double flightPrice, List<Profil> profiles, String currency) {
+    private double getTotalPriceOfReservation(double singleFlightPrice, List<Profile> profiles, String currency) {
         Map<String, Double> currencies = currencyService.getCurrencies();
-        double totalPrice = flightPrice * profiles.size();
-        isDiscountAvailable();
-        double totalPriceOfReservation = 0;
-        int nbReduction;
+        double priceOfAllLuggage = profiles.stream().mapToInt(Profile::getNbLuggage).sum() * 100;
+        double totalFlightPrice = singleFlightPrice * profiles.size();
+
         if (profiles.size() >= 4) {
-            nbReduction = 2;
-        } else {
-            nbReduction = 0;
+            double discountValue = getDiscountValue(singleFlightPrice, profiles);
+            totalFlightPrice -= discountValue;
         }
 
-        for (Profil profile : profiles) {
-            if (isChild(profile) && nbReduction != 0) {
-                nbReduction--;
-                totalPriceOfReservation = totalPriceOfReservation + (flightPrice/2) + (profile.getNbLuggage() * (100 * currencies.get(currency)));
-            } else {
-                totalPriceOfReservation = totalPriceOfReservation + flightPrice + (profile.getNbLuggage() * (100 * currencies.get(currency)));
-            }
-        }
-
-        return totalPriceOfReservation;
+        return (totalFlightPrice + priceOfAllLuggage) * currencies.get(currency);
     }
 
-    private boolean isChild(Profil profile) {
+    private double getDiscountValue(double singleFlightPrice, List<Profile> profiles) {
+        long amountOfChildren = profiles.stream()
+                .filter(this::isChild)
+                .count();
+
+        return Long.min(amountOfChildren, 2) * singleFlightPrice / 2;
+    }
+
+    private boolean isChild(Profile profile) {
         return profile.getBirthday().isBefore(LocalDate.now().minusYears(15));
     }
 }
