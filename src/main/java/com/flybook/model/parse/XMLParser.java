@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.StringReader;
 
 public class XMLParser {
-    public static void main(String[] args) {
+    public void parse() {
         String url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
         RestTemplate restTemplate = new RestTemplate();
         String xmlData = restTemplate.getForObject(url, String.class);

@@ -2,29 +2,17 @@ package com.flybook.model.parse;
 
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class Cube {
-    private String time;
-    private List<Currency> currencies;
-
     @XmlAttribute(name = "time")
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
+    private String time;
     @XmlElement(name = "Cube")
-    public List<Currency> getCurrencies() {
-        return currencies;
-    }
-
-    public void setCurrencies(List<Currency> currencies) {
-        this.currencies = currencies;
-    }
+    private List<Currency> currencies;
 }
 
