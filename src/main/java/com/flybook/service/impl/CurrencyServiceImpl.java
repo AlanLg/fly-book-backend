@@ -1,17 +1,20 @@
 package com.flybook.service.impl;
 
+import com.flybook.model.parse.Currency;
 import com.flybook.model.parse.Envelope;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.StringReader;
+import java.util.List;
 
 @Service
-public class XMLService {
-    public Envelope fetchAndParseXML() {
+public class CurrencyServiceImpl {
+    public List<Currency> fetchAndParseXML() {
         String url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 
         try {
@@ -21,7 +24,8 @@ public class XMLService {
             if (xmlData != null) {
                 JAXBContext jaxbContext = JAXBContext.newInstance(Envelope.class);
                 Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                return (Envelope) unmarshaller.unmarshal(new StringReader(xmlData));
+                Envelope unmarshal = (Envelope) unmarshaller.unmarshal(new StringReader(xmlData));
+                return unmarshal.getCubeWrapper().getTimeCube().getCurrencies();
             }
         } catch (JAXBException e) {
             throw new RuntimeException("Error during XML parsing: " + e.getMessage());
