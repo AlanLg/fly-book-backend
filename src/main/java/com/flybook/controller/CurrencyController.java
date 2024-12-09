@@ -1,7 +1,7 @@
 package com.flybook.controller;
 
 import com.flybook.model.parse.Currency;
-import com.flybook.service.impl.CurrencyServiceImpl;
+import com.flybook.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CurrencyController {
 
-    private final CurrencyServiceImpl currencyServiceImpl;
+    private final CurrencyService currencyService;
 
     @GetMapping("/fetch-rates")
     public ResponseEntity<List<Currency>> fetchRates() {
-        return ResponseEntity.ok(currencyServiceImpl.fetchAndParseXML());
+        return ResponseEntity.ok(currencyService.fetchAndParseCurrencyXML());
     }
 }
 
