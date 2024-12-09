@@ -40,6 +40,7 @@ public class CurrencyServiceImpl implements CurrencyService {
                     Envelope unmarshal = (Envelope) unmarshaller.unmarshal(new StringReader(xmlData));
                     log.info("xml data parsed: {}", unmarshal);
                     List<Currency> currencies = unmarshal.getCubeWrapper().getTimeCube().getCurrencies();
+                    currencies.add(new Currency("EUR", "1"));
                     this.currencies = currencies;
                     this.lastUpdateTime = System.currentTimeMillis();
                     return currencies;
