@@ -6,13 +6,13 @@ import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.createReservation(reservationDTORequest, principal.getName()));
     }
 
-    @PostMapping("/get")
+    @GetMapping
     public ResponseEntity<List<ReservationDTOResponse>> getAllReservationForClient(Principal principal) throws FlybookException {
         return ResponseEntity.ok(reservationService.getAllReservationsForClient(principal.getName()));
     }

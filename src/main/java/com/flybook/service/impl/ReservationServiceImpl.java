@@ -3,7 +3,6 @@ package com.flybook.service.impl;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ProfilMapper;
 import com.flybook.mapper.ReservationMapper;
-import com.flybook.model.dto.request.ProfilDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
 import com.flybook.model.entity.Client;
@@ -23,7 +22,6 @@ import reactor.core.publisher.Sinks;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,6 +56,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         int numberOfSeatsForFlight = reservationRepository.countDistinctByFlightAndDepartureDate(flight, reservationDTORequest.getDepartureDate());
         if (numberOfSeatsForFlight == flight.getNumberOfSeats()) {
+            Sinks.EmitResult result = sink.tryEmitNext("failed");
+            if (result.isFailure()) {
+                log.error("Failed to push event");
+            }
             throw new FlybookException("The flight is full", HttpStatus.CONFLICT);
         }
 
@@ -84,7 +86,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         createdReservation.setProfiles(profiles);
 
-        Sinks.EmitResult result = sink.tryEmitNext("Hello World" + createdReservation.getId());
+        Sinks.EmitResult result = sink.tryEmitNext("success");
         if (result.isFailure()) {
             log.error("Failed to push event");
         }
