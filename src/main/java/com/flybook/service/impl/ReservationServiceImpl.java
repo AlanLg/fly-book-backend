@@ -72,22 +72,23 @@ public class ReservationServiceImpl implements ReservationService {
             return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(existingReservation.get());
         }
 
-        Reservation reservation = reservationRepository.save(createdReservation);
+        List<Profile> profiles = ProfilMapper.INSTANCE.profilDTORequestListToProfilListEntity(reservationDTORequest.getProfilDTORequestList());
+        createdReservation.setPriceOfReservation(getTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
+        createdReservation.setNbLuggage(profiles.stream().mapToInt(Profile::getNbLuggage).sum());
+        createdReservation = reservationRepository.save(createdReservation);
 
-        List<Profile> profiles = new ArrayList<>();
-        for (ProfilDTORequest profilDTORequest : reservationDTORequest.getProfilDTORequestList()) {
-            Profile profile = ProfilMapper.INSTANCE.profilDTORequestToProfilEntity(profilDTORequest);
-            profile.setReservation(reservation);
-            profiles.add(profilRepository.save(profile));
+        for (Profile profile : profiles) {
+            profile.setReservation(createdReservation);
+            profilRepository.save(profile);
         }
-        reservation.setProfiles(profiles);
-        reservation.setPriceOfReservation(getTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
 
-        Sinks.EmitResult result = sink.tryEmitNext("Hello World" + reservation.getId());
+        createdReservation.setProfiles(profiles);
+
+        Sinks.EmitResult result = sink.tryEmitNext("Hello World" + createdReservation.getId());
         if (result.isFailure()) {
             log.error("Failed to push event");
         }
-        return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(reservation);
+        return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(createdReservation);
     }
 
     private double getTotalPriceOfReservation(double singleFlightPrice, List<Profile> profiles, String currency) {

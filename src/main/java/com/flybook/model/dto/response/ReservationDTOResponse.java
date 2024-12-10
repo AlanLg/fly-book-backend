@@ -13,5 +13,6 @@ public class ReservationDTOResponse {
     private ClientDTOResponse client;
     private List<ProfilDTOResponse> profilDTOResponseList;
     private LocalDate departureDate;
+    private double priceOfReservation;
     private int nbLuggage;
 }
