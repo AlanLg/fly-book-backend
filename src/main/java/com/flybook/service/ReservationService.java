@@ -8,6 +8,6 @@ import java.util.List;
 
 @Service
 public interface ReservationService {
-    ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest);
+    ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest, String email);
     List<ReservationDTOResponse> getAllReservationsForClient(String clientEmail);
 }

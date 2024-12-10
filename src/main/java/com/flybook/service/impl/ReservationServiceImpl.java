@@ -37,8 +37,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final CurrencyServiceImpl currencyService;
 
     @Override
-    public ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest) {
-        Client client = clientService.getClientForReservation(reservationDTORequest);
+    public ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest, String email) {
+        Client client = clientService.getClientForReservation(email);
         return finaliserReservation(reservationDTORequest, client);
     }
 

@@ -14,11 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 public class ReservationDTORequest {
-    @Schema(example = "john.doe@gmail.com")
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Invalid email")
-    @Size(min = 3, message = "Email must be at least 3 chars")
-    private String email;
     @NotBlank(message = "Airport name is mandatory")
     @Schema(example = "CDG")
     private String departureAirport;

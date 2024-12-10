@@ -82,8 +82,8 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    public Client getClientForReservation(ReservationDTORequest reservationDTORequest) {
-        return clientRepository.findByEmail(reservationDTORequest.getEmail())
+    public Client getClientForReservation(String email) {
+        return clientRepository.findByEmail(email)
                 .orElseThrow(() -> new FlybookException("No client in the data base", HttpStatus.NOT_FOUND)
                 );
     }
