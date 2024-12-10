@@ -42,6 +42,12 @@ public class ReservationServiceImpl implements ReservationService {
         return finaliserReservation(reservationDTORequest, client);
     }
 
+    @Override
+    public List<ReservationDTOResponse> getAllReservationsForClient(String clientEmail) {
+        return ReservationMapper.INSTANCE
+                .reservationEntityToReservationDTOResponse(reservationRepository.findByClient_Email(clientEmail));
+    }
+
     private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, Client client) {
         Flight flight = flightService.getFlightForReservation(reservationDTORequest);
 

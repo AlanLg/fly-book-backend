@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -23,5 +26,10 @@ public class ReservationController {
     @PostMapping("/add")
     public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequest reservationDTORequest) throws FlybookException {
         return ResponseEntity.ok(reservationService.createReservation(reservationDTORequest));
+    }
+
+    @PostMapping("/get")
+    public ResponseEntity<List<ReservationDTOResponse>> getAllReservationForClient(Principal principal) throws FlybookException {
+        return ResponseEntity.ok(reservationService.getAllReservationsForClient(principal.getName()));
     }
 }
