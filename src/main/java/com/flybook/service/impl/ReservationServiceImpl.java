@@ -82,24 +82,20 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private double getTotalPriceOfReservation(double singleFlightPrice, List<Profile> profiles, String currency) {
+        currencyService.fetchAndParseCurrencyXML();
         Map<String, Double> currencies = currencyService.getCurrencies();
         double priceOfAllLuggage = profiles.stream().mapToInt(Profile::getNbLuggage).sum() * 100;
         double totalFlightPrice = singleFlightPrice * profiles.size();
-
-        if (profiles.size() >= 4) {
-            double discountValue = getDiscountValue(singleFlightPrice, profiles);
-            totalFlightPrice -= discountValue;
-        }
-
-        return (totalFlightPrice + priceOfAllLuggage) * currencies.get(currency);
-    }
-
-    private double getDiscountValue(double singleFlightPrice, List<Profile> profiles) {
         long amountOfChildren = profiles.stream()
                 .filter(this::isChild)
                 .count();
+        long amountOfAdult = profiles.size() - amountOfChildren;
 
-        return Long.min(amountOfChildren, 2) * singleFlightPrice / 2;
+        if (profiles.size() >= 4 && amountOfChildren >= 2 && amountOfAdult >= 2) {
+            totalFlightPrice -= singleFlightPrice;
+        }
+
+        return (totalFlightPrice + priceOfAllLuggage) * currencies.get(currency);
     }
 
     private boolean isChild(Profile profile) {
