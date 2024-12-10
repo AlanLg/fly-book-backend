@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -26,4 +27,5 @@ public class Reservation {
     private LocalDate departureDate;
     private int nbLuggage;
     private double priceOfReservation;
+    private LocalDateTime creationDate = LocalDateTime.now();
 }

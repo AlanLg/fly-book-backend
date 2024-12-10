@@ -24,6 +24,7 @@ public interface ReservationMapper {
     @Mapping(source = "flight.arrivalAirport", target = "flight.arrivalAirport")
     @Mapping(source = "departureDate", target = "departureDate")
     @Mapping(source = "nbLuggage", target = "nbLuggage")
+    @Mapping(source = "profiles", target = "profilDTOResponseList")
     ReservationDTOResponse reservationEntityToReservationDTOResponse(Reservation reservation);
     List<ReservationDTOResponse> reservationEntityToReservationDTOResponse(List<Reservation> reservation);
 

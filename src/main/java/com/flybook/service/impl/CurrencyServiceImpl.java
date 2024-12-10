@@ -29,6 +29,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     private long lastUpdateTime = 0;
     private List<Currency> currencies;
 
+    public CurrencyServiceImpl() {
+        fetchAndParseCurrencyXML();
+    }
+
     public List<Currency> fetchAndParseCurrencyXML() {
         if (System.currentTimeMillis() > this.lastUpdateTime + ONE_DAY_IN_MS) {
             try {

@@ -14,12 +14,15 @@ import com.flybook.repository.ProfilRepository;
 import com.flybook.repository.ReservationRepository;
 import com.flybook.service.ReservationService;
 import com.flybook.utils.ReservationValidationUtils;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Sinks;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final FlightServiceImpl flightService;
     private final ProfilRepository profilRepository;
     private final CurrencyServiceImpl currencyService;
+    @Getter
+    private final Sinks.Many<String> sink = Sinks.many().multicast().onBackpressureBuffer();
 
     @Override
     public ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest, String email) {
@@ -78,11 +83,14 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setProfiles(profiles);
         reservation.setPriceOfReservation(getTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
 
+        Sinks.EmitResult result = sink.tryEmitNext("Hello World" + reservation.getId());
+        if (result.isFailure()) {
+            log.error("Failed to push event");
+        }
         return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(reservation);
     }
 
     private double getTotalPriceOfReservation(double singleFlightPrice, List<Profile> profiles, String currency) {
-        currencyService.fetchAndParseCurrencyXML();
         Map<String, Double> currencies = currencyService.getCurrencies();
         double priceOfAllLuggage = profiles.stream().mapToInt(Profile::getNbLuggage).sum() * 100;
         double totalFlightPrice = singleFlightPrice * profiles.size();
@@ -100,5 +108,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private boolean isChild(Profile profile) {
         return profile.getBirthday().isBefore(LocalDate.now().minusYears(15));
+    }
+
+    @Override
+    public Long getNumberOfReservationsInRealTime() throws FlybookException {
+        return reservationRepository.countAllByCreationDateIsAfter(LocalDateTime.now());
     }
 }

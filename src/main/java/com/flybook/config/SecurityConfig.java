@@ -55,7 +55,7 @@ public class SecurityConfig {
                             .configurationSource(source);
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/client/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/client/**", "/h2-console/**", "/realtime/**").permitAll()
                         .requestMatchers("/reservation/**", "/currencies/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/airport/**", "/flight/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()

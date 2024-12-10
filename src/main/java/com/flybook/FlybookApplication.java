@@ -1,5 +1,6 @@
 package com.flybook;
 
+import com.flybook.service.impl.CurrencyServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

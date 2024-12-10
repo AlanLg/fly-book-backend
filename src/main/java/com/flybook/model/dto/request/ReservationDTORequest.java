@@ -18,14 +18,14 @@ public class ReservationDTORequest {
     @Schema(example = "CDG")
     private String departureAirport;
     @NotBlank(message = "Airport name is mandatory")
-    @Schema(example = "JDK")
+    @Schema(example = "JFK")
     private String arrivalAirport;
     @NotBlank(message = "Departure date is mandatory")
     @Schema(example = "2024-04-18")
     private LocalDate departureDate;
-    @Schema(example = "$")
+    @Schema(example = "EUR")
     private String currency;
-    @NotEmpty(message = "Profil is mandatory")
-    @NotBlank(message = "Profil is mandatory")
+    @NotEmpty(message = "Profiles are mandatory")
+    @NotBlank(message = "Profiles are mandatory")
     private List<ProfilDTORequest> profilDTORequestList;
 }
