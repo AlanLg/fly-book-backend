@@ -13,15 +13,9 @@ import java.util.List;
 @Transactional
 public interface FlightService {
     FlightDTOResponse addFlight(FlightDTORequest flightDTOIn) throws FlybookException;
-
     FlightDTOResponse updateFlight(Long id, FlightDTORequest flightDTORequest);
-
-    void deleteFlight(Long id);
-
-    List<FlightDTOResponse> searchFlight(FilterFlightDTORequest filterFlightDTORequest);
-
-    Flight getFlightForReservation(ReservationDTORequest reservationDTORequest);
-
     FlightDTOResponse getFlight(Long id) throws FlybookException;
+    List<FlightDTOResponse> searchFlight(FilterFlightDTORequest filterFlightDTORequest);
     List<FlightDTOResponse> getAllFlight() throws FlybookException;
+    void deleteFlight(Long id);
 }

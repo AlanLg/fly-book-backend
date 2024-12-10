@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Mapper
 public interface ReservationMapper {
@@ -24,11 +25,11 @@ public interface ReservationMapper {
     @Mapping(source = "departureDate", target = "departureDate")
     @Mapping(source = "nbLuggage", target = "nbLuggage")
     ReservationDTOResponse reservationEntityToReservationDTOResponse(Reservation reservation);
+    List<ReservationDTOResponse> reservationEntityToReservationDTOResponse(List<Reservation> reservation);
 
 
     @Mapping(source = "client", target = "client")
     @Mapping(source = "flight", target = "flight")
     @Mapping(source = "reservationDTORequest.departureDate", target = "departureDate")
-    @Mapping(source = "reservationDTORequest.nbLuggage", target = "nbLuggage")
     Reservation clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(Client client, Flight flight, ReservationDTORequest reservationDTORequest);
 }

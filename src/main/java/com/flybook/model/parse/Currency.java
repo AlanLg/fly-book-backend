@@ -5,11 +5,13 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Currency {
 

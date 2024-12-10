@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +21,9 @@ public class Reservation {
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "client_id")
     private Client client;
+    @OneToMany(mappedBy = "reservation")
+    private List<Profile> profiles;
     private LocalDate departureDate;
     private int nbLuggage;
+    private double priceOfReservation;
 }
