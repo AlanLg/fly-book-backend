@@ -22,7 +22,7 @@ public class RealtimeController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping(path = "/periodic", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/reservation", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> getEvents() {
         return reservationService.getSink().asFlux().map(e -> ServerSentEvent.builder(e).build());
     }
