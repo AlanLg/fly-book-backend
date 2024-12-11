@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Sinks;
 
 import java.security.Principal;
 import java.util.List;
@@ -33,5 +34,21 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationDTOResponse>> getAllReservationForClient(Principal principal) throws FlybookException {
         return ResponseEntity.ok(reservationService.getAllReservationsForClient(principal.getName()));
+    }
+
+    @GetMapping("test/success")
+    public void test() {
+        Sinks.EmitResult result = reservationService.getSink().tryEmitNext("success");
+        if (result.isFailure()) {
+            log.error("Failed to push event");
+        }
+    }
+
+    @GetMapping("test/failed")
+    public void testFailed() {
+        Sinks.EmitResult result = reservationService.getSink().tryEmitNext("failed");
+        if (result.isFailure()) {
+            log.error("Failed to push event");
+        }
     }
 }
