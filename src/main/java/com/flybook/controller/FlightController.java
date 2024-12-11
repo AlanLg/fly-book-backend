@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/flight")
+@RequestMapping("/v1/flight")
 public class FlightController {
     private final FlightService flightService;
 
@@ -25,29 +25,29 @@ public class FlightController {
         this.flightService = flightService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<FlightDTOResponse> getFlight(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(flightService.getFlight(id));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<List<FlightDTOResponse>> getAllFlight() throws FlybookException {
         return ResponseEntity.ok(flightService.getAllFlight());
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<FlightDTOResponse> addFlight(@Valid @RequestBody FlightDTORequest flightDTORequest) throws FlybookException {
         log.info("Adding flight: {}", flightDTORequest.toString());
         return ResponseEntity.ok(flightService.addFlight(flightDTORequest));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<FlightDTOResponse> updateFlight(@PathVariable Long id, @RequestBody FlightDTORequest flightDTORequest) throws FlybookException {
         log.info("Updating flight: {}", flightDTORequest.toString());
         return ResponseEntity.ok(flightService.updateFlight(id, flightDTORequest));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
         try {
             flightService.deleteFlight(id);

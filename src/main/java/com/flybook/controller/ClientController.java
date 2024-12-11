@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/client")
+@RequestMapping("/v1/client")
 @RequiredArgsConstructor
 public class ClientController {
 
@@ -54,7 +54,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ClientDTOResponse> getClient(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(clientService.getClient(id));
     }
@@ -65,13 +65,13 @@ public class ClientController {
         return ResponseEntity.ok(clientService.addClient(clientDTORequest));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<ClientDTOResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTORequest clientDTORequest) throws FlybookException {
         log.info("Updating client: {}", clientDTORequest.toString());
         return ResponseEntity.ok(clientService.updateClient(id, clientDTORequest));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         log.info("Deleting client {}", id);
         try {

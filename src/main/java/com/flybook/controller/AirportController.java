@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/airport")
+@RequestMapping("/v1/airport")
 public class AirportController {
 
     private final AirportService airportService;
@@ -24,30 +24,30 @@ public class AirportController {
         this.airportService = airportService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<AirportDTOResponse> getAirport(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(airportService.getAirport(id));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<List<String>> getAllAirport() throws FlybookException {
         return ResponseEntity.ok(airportService.getAllAirport());
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<AirportDTOResponse> addAirport(@RequestBody AirportDTORequest airportDTORequest) throws FlybookException {
         log.info("Adding airport: {}", airportDTORequest.toString());
         return ResponseEntity.ok(airportService.addAirport(airportDTORequest));
     }
 
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<AirportDTOResponse> updateAirport(@PathVariable Long id, @RequestBody AirportDTORequest airportDTORequest) throws FlybookException {
         log.info("Updating airport: {}", airportDTORequest.toString());
         return ResponseEntity.ok(airportService.updateAirport(id, airportDTORequest));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteAirport(@PathVariable Long id) {
         try {
             airportService.deleteAirport(id);
