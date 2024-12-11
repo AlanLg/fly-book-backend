@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/airplane")
+@RequestMapping("/v1/airplane")
 public class AirplaneController {
     private final AirplaneService airplaneService;
 
@@ -18,24 +18,24 @@ public class AirplaneController {
         this.airplaneService = airplaneService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<AirplaneDTOResponse> getAirplane(@PathVariable Long id) throws FlybookException {
         return ResponseEntity.ok(airplaneService.getAirplane(id));
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<AirplaneDTOResponse> addAirplane(@RequestBody AirplaneDTORequest airplaneDTORequest) throws FlybookException {
         log.info("Adding airplane: {}", airplaneDTORequest.toString());
         return ResponseEntity.ok(airplaneService.addAirplane(airplaneDTORequest));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<AirplaneDTOResponse> updateAirplane(@PathVariable Long id, @RequestBody AirplaneDTORequest airplaneDTORequest) throws FlybookException {
         log.info("Updating airplane: {}", airplaneDTORequest.toString());
         return ResponseEntity.ok(airplaneService.updateAirplane(id, airplaneDTORequest));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteAirplane(@PathVariable Long id) {
         try {
             airplaneService.deleteAirplane(id);

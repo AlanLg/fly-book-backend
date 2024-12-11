@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/currencies")
+@RequestMapping("/v1/currencies")
 @RequiredArgsConstructor
 public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    @GetMapping("/fetch-rates")
+    @GetMapping("/")
     public ResponseEntity<List<Currency>> fetchRates() {
         return ResponseEntity.ok(currencyService.fetchAndParseCurrencyXML());
     }

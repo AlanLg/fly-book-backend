@@ -14,7 +14,7 @@ import java.time.Duration;
 import java.util.stream.Stream;
 
 @Controller
-@RequestMapping("/realtime")
+@RequestMapping("/v1/realtime")
 public class RealtimeController {
     private final ReservationService reservationService;
 
