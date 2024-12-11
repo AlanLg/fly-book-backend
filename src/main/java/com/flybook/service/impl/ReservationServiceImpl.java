@@ -3,13 +3,14 @@ package com.flybook.service.impl;
 import com.flybook.dbaccess.ProfileDbAccess;
 import com.flybook.dbaccess.ReservationDbAccess;
 import com.flybook.exception.FlybookException;
-import com.flybook.mapper.ProfilMapper;
+import com.flybook.mapper.ProfileMapper;
 import com.flybook.mapper.ReservationMapper;
+import com.flybook.model.dto.db.ClientDTO;
+import com.flybook.model.dto.db.FlightAndDepartureDateDTO;
 import com.flybook.model.dto.db.FlightDTO;
 import com.flybook.model.dto.db.ProfileDTO;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
-import com.flybook.model.dto.db.ClientDTO;
 import com.flybook.model.dto.db.ReservationDTO;
 import com.flybook.service.ReservationService;
 import com.flybook.utils.ReservationValidationUtils;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Sinks;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +54,11 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, ClientDTO clientDTO) {
         FlightDTO flightDTO = flightService.getFlightForReservation(reservationDTORequest);
 
-        int numberOfSeatsForFlight = reservationDbAccess.countDistinctByFlightAndDepartureDate(flightDTO, reservationDTORequest.getDepartureDate());
+        FlightAndDepartureDateDTO flightAndDepartureDateDTO = new FlightAndDepartureDateDTO();
+        flightAndDepartureDateDTO.setDepartureDate(reservationDTORequest.getDepartureDate());
+        flightAndDepartureDateDTO.setFlight(flightDTO);
+
+        int numberOfSeatsForFlight = reservationDbAccess.countDistinctByFlightAndDepartureDate(flightAndDepartureDateDTO);
         if (numberOfSeatsForFlight == flightDTO.getNumberOfSeats()) {
             Sinks.EmitResult result = sink.tryEmitNext("failed");
             if (result.isFailure()) {
@@ -68,23 +72,23 @@ public class ReservationServiceImpl implements ReservationService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<ReservationDTO> existingReservation = reservationDbAccess.findByFlightIdAndClientId(createdReservationDTO.getFlightDTO().getFlightId(), createdReservationDTO.getClientDTO().getId());
+        Optional<ReservationDTO> existingReservation = reservationDbAccess.findByFlightIdAndClientId(createdReservationDTO.getFlight().getFlightId(), createdReservationDTO.getClient().getId());
 
         if (existingReservation.isPresent()) {
             return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(existingReservation.get());
         }
 
-        List<ProfileDTO> profileDTOS = ProfilMapper.INSTANCE.profilDTORequestListToProfilListEntity(reservationDTORequest.getProfilDTORequestList());
+        List<ProfileDTO> profileDTOS = ProfileMapper.INSTANCE.profileDTORequestListToProfileListEntity(reservationDTORequest.getProfileDTORequestList());
         createdReservationDTO.setPriceOfReservation(getTotalPriceOfReservation(flightDTO.getPrice(), profileDTOS, reservationDTORequest.getCurrency()));
         createdReservationDTO.setNbLuggage(profileDTOS.stream().mapToInt(ProfileDTO::getNbLuggage).sum());
         createdReservationDTO = reservationDbAccess.saveReservation(createdReservationDTO);
 
         for (ProfileDTO profileDTO : profileDTOS) {
-            profileDTO.setReservationDTO(createdReservationDTO);
+            profileDTO.setReservation(createdReservationDTO);
             profileDbAccess.saveProfile(profileDTO);
         }
 
-        createdReservationDTO.setProfileDTOS(profileDTOS);
+        createdReservationDTO.setProfiles(profileDTOS);
 
         Sinks.EmitResult result = sink.tryEmitNext("success");
         if (result.isFailure()) {

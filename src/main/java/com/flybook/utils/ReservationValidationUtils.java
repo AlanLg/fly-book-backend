@@ -9,8 +9,8 @@ import static com.flybook.utils.ClientValidationUtils.isValidClient;
 public class ReservationValidationUtils {
     public static boolean isValidReservation(ReservationDTO reservationDTO) {
         return reservationDTO != null &&
-                isValidClient(reservationDTO.getClientDTO()) &&
-                Objects.nonNull(reservationDTO.getFlightDTO()) &&
+                isValidClient(reservationDTO.getClient()) &&
+                Objects.nonNull(reservationDTO.getFlight()) &&
                 reservationDTO.getNbLuggage() >= 0;
     }
 }

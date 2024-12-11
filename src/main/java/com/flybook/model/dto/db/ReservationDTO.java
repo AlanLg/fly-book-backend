@@ -12,9 +12,9 @@ import java.util.List;
 @Setter
 public class ReservationDTO {
     private Long id;
-    private FlightDTO flightDTO;
-    private ClientDTO clientDTO;
-    private List<ProfileDTO> profileDTOS;
+    private FlightDTO flight;
+    private ClientDTO client;
+    private List<ProfileDTO> profiles;
     private LocalDate departureDate;
     private int nbLuggage;
     private double priceOfReservation;

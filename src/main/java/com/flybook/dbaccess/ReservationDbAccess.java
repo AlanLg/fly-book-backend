@@ -21,6 +21,9 @@ public interface ReservationDbAccess {
     @GetMapping("/client-email/{clientEmail}")
     List<ReservationDTO> findByClientEmail(@PathVariable String clientEmail);
 
+    @GetMapping("/flight/{flightId}")
+    List<ReservationDTO> findByFlightId(@PathVariable Long flightId);
+
     @PostMapping("/")
     ReservationDTO saveReservation(@RequestBody ReservationDTO reservationDTO);
 

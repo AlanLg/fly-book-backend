@@ -43,8 +43,8 @@ public class FlightServiceImpl implements FlightService {
         }
 
         Optional<FlightDTO> existingFlight = flightDbAccess.findByDepartureAndArrivalAirport(
-                createdFlightDTO.getDepartureAirportDTO().getAirportName(),
-                createdFlightDTO.getArrivalAirportDTO().getAirportName()
+                createdFlightDTO.getDepartureAirport().getAirportName(),
+                createdFlightDTO.getArrivalAirport().getAirportName()
         );
 
         if (existingFlight.isPresent()) {
@@ -73,14 +73,14 @@ public class FlightServiceImpl implements FlightService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        AirplaneDTO airplaneDTO = airplaneService.findOrSaveAirplane(updatedFlightDTO.getAirplaneDTO());
-        updatedFlightDTO.setAirplaneDTO(airplaneDTO);
+        AirplaneDTO airplaneDTO = airplaneService.findOrSaveAirplane(updatedFlightDTO.getAirplane());
+        updatedFlightDTO.setAirplane(airplaneDTO);
 
-        AirportDTO departureAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getDepartureAirportDTO());
-        updatedFlightDTO.setDepartureAirportDTO(departureAirportDTO);
+        AirportDTO departureAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getDepartureAirport());
+        updatedFlightDTO.setDepartureAirport(departureAirportDTO);
 
-        AirportDTO arrivalAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getArrivalAirportDTO());
-        updatedFlightDTO.setArrivalAirportDTO(arrivalAirportDTO);
+        AirportDTO arrivalAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getArrivalAirport());
+        updatedFlightDTO.setArrivalAirport(arrivalAirportDTO);
 
         return updatedFlightDTO;
     }
@@ -92,8 +92,9 @@ public class FlightServiceImpl implements FlightService {
         }
 
         FlightDTO flightDTO = flightDbAccess.findById(id).orElse(null);
-        if (flightDTO != null ) {
-            List<ReservationDTO> reservationsOfFlight = reservationDbAccess.findByFlight_FlightId(flightDTO.getFlightId()).orElse(null);
+
+        if (flightDTO != null) {
+            List<ReservationDTO> reservationsOfFlight = reservationDbAccess.findByFlightId(flightDTO.getFlightId());
             if (reservationsOfFlight != null && !reservationsOfFlight.isEmpty()){
                 throw new FlybookException("Impossible to delete flight because some reservations are links with this flight", HttpStatus.CONFLICT);
             }
@@ -150,13 +151,13 @@ public class FlightServiceImpl implements FlightService {
 
     private List<FlightDTO> filterByDepartureAirport(List<FlightDTO> flightDTOS, String departureAirport) {
         return flightDTOS.stream()
-                .filter(flight -> flight.getDepartureAirportDTO().getAirportName().equalsIgnoreCase(departureAirport))
+                .filter(flight -> flight.getDepartureAirport().getAirportName().equalsIgnoreCase(departureAirport))
                 .toList();
     }
 
     private List<FlightDTO> filterByArrivalAirport(List<FlightDTO> flightDTOS, String arrivalAirport) {
         return flightDTOS.stream()
-                .filter(flight -> flight.getArrivalAirportDTO().getAirportName().equalsIgnoreCase(arrivalAirport))
+                .filter(flight -> flight.getArrivalAirport().getAirportName().equalsIgnoreCase(arrivalAirport))
                 .toList();
     }
 }

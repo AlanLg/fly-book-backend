@@ -8,6 +8,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class FlightAndDepartureDateDTO {
-    private FlightDTO flightDTO;
+    private FlightDTO flight;
     private LocalDate departureDate;
 }

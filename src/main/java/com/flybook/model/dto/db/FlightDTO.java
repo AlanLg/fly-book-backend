@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class FlightDTO {
     private Long flightId;
-    private AirportDTO departureAirportDTO;
-    private AirportDTO arrivalAirportDTO;
+    private AirportDTO departureAirport;
+    private AirportDTO arrivalAirport;
     private double price;
-    private AirplaneDTO airplaneDTO;
+    private AirplaneDTO airplane;
     private int numberOfSeats;
 }

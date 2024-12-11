@@ -1,8 +1,8 @@
 package com.flybook.mapper;
 
+import com.flybook.model.dto.db.ClientDTO;
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
-import com.flybook.model.dto.db.ClientDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

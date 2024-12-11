@@ -23,7 +23,7 @@ public interface ReservationMapper {
     @Mapping(source = "flight.arrivalAirport", target = "flight.arrivalAirport")
     @Mapping(source = "departureDate", target = "departureDate")
     @Mapping(source = "nbLuggage", target = "nbLuggage")
-    @Mapping(source = "profiles", target = "profilDTOResponseList")
+    @Mapping(source = "profiles", target = "profileDTOResponseList")
     @Mapping(source = "priceOfReservation", target = "priceOfReservation")
     ReservationDTOResponse reservationEntityToReservationDTOResponse(ReservationDTO reservationDTO);
     List<ReservationDTOResponse> reservationEntityToReservationDTOResponse(List<ReservationDTO> reservationDTO);
@@ -32,5 +32,5 @@ public interface ReservationMapper {
     @Mapping(source = "client", target = "client")
     @Mapping(source = "flight", target = "flight")
     @Mapping(source = "reservationDTORequest.departureDate", target = "departureDate")
-    ReservationDTO clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(ClientDTO clientDTO, FlightDTO flightDTO, ReservationDTORequest reservationDTORequest);
+    ReservationDTO clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(ClientDTO client, FlightDTO flight, ReservationDTORequest reservationDTORequest);
 }

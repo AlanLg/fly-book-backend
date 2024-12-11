@@ -12,6 +12,6 @@ public class ProfileDTO {
     private String firstname;
     private String lastname;
     private LocalDate birthday;
-    private ReservationDTO reservationDTO;
+    private ReservationDTO reservation;
     private int nbLuggage;
 }

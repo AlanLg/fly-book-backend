@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @Getter
 @Setter
-public class ProfilDTORequest {
+public class ProfileDTORequest {
     @Schema(example = "John")
     @NotBlank(message = "Firstname is mandatory")
     private String firstname;

@@ -10,7 +10,7 @@ import static com.flybook.utils.AirportValidationUtils.isValidAirport;
 @Slf4j
 public class FlightValidationUtils {
     public static boolean verifyElementInEntityToSave(FlightDTO flightDTO) {
-        boolean isValid = isValidAirport(flightDTO.getDepartureAirportDTO()) || isValidAirport(flightDTO.getArrivalAirportDTO());
+        boolean isValid = isValidAirport(flightDTO.getDepartureAirport()) || isValidAirport(flightDTO.getArrivalAirport());
         if (!isValid){
             log.info("Flight is not valid");
         }
