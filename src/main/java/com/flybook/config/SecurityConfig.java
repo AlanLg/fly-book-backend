@@ -53,9 +53,9 @@ public class SecurityConfig {
                             .configurationSource(source);
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/client/**", "/h2-console/**", "/realtime/**").permitAll()
-                        .requestMatchers("/reservation/**", "/currencies/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/airport/**", "/flight/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/v1/client/**", "/h2-console/**", "/v1/realtime/**").permitAll()
+                        .requestMatchers("/v1/reservation/**", "/v1/currencies/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/v1/airport/**", "/v1/flight/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess
