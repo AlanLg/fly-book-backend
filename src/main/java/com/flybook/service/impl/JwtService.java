@@ -1,4 +1,4 @@
-package com.flybook.service;
+package com.flybook.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

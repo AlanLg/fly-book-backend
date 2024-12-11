@@ -1,57 +1,57 @@
 package com.flybook.service.impl;
+
+import com.flybook.dbaccess.AirplaneDbAccess;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.AirplaneMapper;
+import com.flybook.model.dto.db.AirplaneDTO;
 import com.flybook.model.dto.request.AirplaneDTORequest;
 import com.flybook.model.dto.response.AirplaneDTOResponse;
-import com.flybook.model.entity.Airplane;
-import com.flybook.repository.AirplaneRepository;
 import com.flybook.service.AirplaneService;
 import com.flybook.utils.AirplaneValidationUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AirplaneServiceImpl implements AirplaneService {
-    private final AirplaneRepository airplaneRepository;
 
-    public AirplaneServiceImpl(AirplaneRepository airplaneRepository) {
-        this.airplaneRepository = airplaneRepository;
-    }
+    private final AirplaneDbAccess airplaneDbAccess;
 
     @Override
     public AirplaneDTOResponse addAirplane(AirplaneDTORequest airplaneDTORequest) throws FlybookException {
-        Airplane createdAirplane = AirplaneMapper.INSTANCE.airplaneDTORequestToAirplaneEntity(airplaneDTORequest);
+        AirplaneDTO createdAirplaneDTO = AirplaneMapper.INSTANCE.airplaneDTORequestToAirplaneEntity(airplaneDTORequest);
 
-        if (!AirplaneValidationUtils.isValidAirplane(createdAirplane)) {
+        if (!AirplaneValidationUtils.isValidAirplane(createdAirplaneDTO)) {
             throw new FlybookException("Missing element in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Airplane> existingAirplane = airplaneRepository.findByBrandAndModel(createdAirplane.getBrand(), createdAirplane.getModel());
+        Optional<AirplaneDTO> existingAirplane = airplaneDbAccess.findByBrandAndModel(createdAirplaneDTO.getBrand(), createdAirplaneDTO.getModel());
 
         if (existingAirplane.isPresent()) {
             return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(existingAirplane.get());
         }
 
-        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(airplaneRepository.save(createdAirplane));
+        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(airplaneDbAccess.saveAirplane(createdAirplaneDTO));
     }
 
     @Override
     public AirplaneDTOResponse updateAirplane(Long id, AirplaneDTORequest airplaneDTORequest) {
-        if (id == null || airplaneRepository.findById(id).isEmpty()) {
+        if (id == null || airplaneDbAccess.findById(id).isEmpty()) {
             throw new FlybookException("No airplane in the database", HttpStatus.NOT_FOUND);
         }
 
-        Airplane updatedAirplane = AirplaneMapper.INSTANCE.airplaneDTORequestToAirplaneEntity(airplaneDTORequest);
+        AirplaneDTO updatedAirplaneDTO = AirplaneMapper.INSTANCE.airplaneDTORequestToAirplaneEntity(airplaneDTORequest);
 
-        if (!AirplaneValidationUtils.isValidAirplane(updatedAirplane)) {
+        if (!AirplaneValidationUtils.isValidAirplane(updatedAirplaneDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        updatedAirplane.setAirplaneId(id);
-        airplaneRepository.save(updatedAirplane);
-        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(updatedAirplane);
+        updatedAirplaneDTO.setAirplaneId(id);
+        airplaneDbAccess.saveAirplane(updatedAirplaneDTO);
+        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(updatedAirplaneDTO);
 
     }
 
@@ -61,9 +61,10 @@ public class AirplaneServiceImpl implements AirplaneService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Airplane airplane = airplaneRepository.findById(id).orElse(null);
-        if (airplane != null) {
-            airplaneRepository.delete(airplane);
+        AirplaneDTO airplaneDTO = airplaneDbAccess.findById(id).orElse(null);
+
+        if (airplaneDTO != null) {
+            airplaneDbAccess.deleteAirplane(airplaneDTO.getAirplaneId());
         } else {
             throw new FlybookException("No airplane in the data base", HttpStatus.NOT_FOUND);
         }
@@ -75,18 +76,18 @@ public class AirplaneServiceImpl implements AirplaneService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Airplane targetAirplane = airplaneRepository.findById(id).orElse(null);
+        AirplaneDTO targetAirplaneDTO = airplaneDbAccess.findById(id).orElse(null);
 
-        if (targetAirplane == null) {
+        if (targetAirplaneDTO == null) {
             throw new FlybookException("No airplane in the data base", HttpStatus.NOT_FOUND);
         }
-        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(targetAirplane);
+        return AirplaneMapper.INSTANCE.airplaneEntityToAirplaneDTOResponse(targetAirplaneDTO);
     }
 
-    public Airplane findOrSaveAirplane(Airplane airplane) {
-        return airplaneRepository.findByBrandAndModel(
-                airplane.getBrand(),
-                airplane.getModel()
-        ).orElseGet(() -> airplaneRepository.save(airplane));
+    public AirplaneDTO findOrSaveAirplane(AirplaneDTO airplaneDTO) {
+        return airplaneDbAccess.findByBrandAndModel(
+                airplaneDTO.getBrand(),
+                airplaneDTO.getModel()
+        ).orElseGet(() -> airplaneDbAccess.saveAirplane(airplaneDTO));
     }
 }

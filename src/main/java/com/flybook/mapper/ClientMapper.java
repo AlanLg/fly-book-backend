@@ -2,12 +2,10 @@ package com.flybook.mapper;
 
 import com.flybook.model.dto.request.ClientDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
-import com.flybook.model.entity.Client;
+import com.flybook.model.dto.db.ClientDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Mapper
 public interface ClientMapper {
@@ -17,10 +15,10 @@ public interface ClientMapper {
     @Mapping(source = "lastname", target = "lastname")
     @Mapping(source = "email", target = "email")
     @Mapping(target = "roles", constant = "ROLE_USER,ROLE_ADMIN")
-    Client clientDTORequestToClientEntity(ClientDTORequest clientDTORequest);
+    ClientDTO clientDTORequestToClientEntity(ClientDTORequest clientDTORequest);
 
     @Mapping(source = "firstname", target = "firstname")
     @Mapping(source = "lastname", target = "lastname")
     @Mapping(source = "email", target = "email")
-    ClientDTOResponse clientEntityToClientDTOResponse(Client client);
+    ClientDTOResponse clientEntityToClientDTOResponse(ClientDTO clientDTO);
 }

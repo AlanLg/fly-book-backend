@@ -1,15 +1,14 @@
 package com.flybook.mapper;
 
+import com.flybook.model.dto.db.ClientDTO;
+import com.flybook.model.dto.db.ReservationDTO;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
-import com.flybook.model.entity.Client;
-import com.flybook.model.entity.Flight;
-import com.flybook.model.entity.Reservation;
+import com.flybook.model.dto.db.FlightDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -26,12 +25,12 @@ public interface ReservationMapper {
     @Mapping(source = "nbLuggage", target = "nbLuggage")
     @Mapping(source = "profiles", target = "profilDTOResponseList")
     @Mapping(source = "priceOfReservation", target = "priceOfReservation")
-    ReservationDTOResponse reservationEntityToReservationDTOResponse(Reservation reservation);
-    List<ReservationDTOResponse> reservationEntityToReservationDTOResponse(List<Reservation> reservation);
+    ReservationDTOResponse reservationEntityToReservationDTOResponse(ReservationDTO reservationDTO);
+    List<ReservationDTOResponse> reservationEntityToReservationDTOResponse(List<ReservationDTO> reservationDTO);
 
 
     @Mapping(source = "client", target = "client")
     @Mapping(source = "flight", target = "flight")
     @Mapping(source = "reservationDTORequest.departureDate", target = "departureDate")
-    Reservation clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(Client client, Flight flight, ReservationDTORequest reservationDTORequest);
+    ReservationDTO clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(ClientDTO clientDTO, FlightDTO flightDTO, ReservationDTORequest reservationDTORequest);
 }

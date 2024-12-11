@@ -1,6 +1,6 @@
 package com.flybook.config;
 
-import com.flybook.service.JwtService;
+import com.flybook.service.impl.JwtService;
 import com.flybook.service.impl.ClientAuthServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
