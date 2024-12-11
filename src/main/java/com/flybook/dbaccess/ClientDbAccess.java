@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
-@FeignClient("/db-access/client")
+@FeignClient(path = "/db-access/client", url = "localhost:8081")
 public interface ClientDbAccess {
 
     @GetMapping("/id/{id}")
