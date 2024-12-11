@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Optional;
 
-@FeignClient(path = "/db-access/reservation", url = "localhost:8081")
+@FeignClient(name = "Reservation", path = "/db-access/reservation", url = "localhost:8081")
 public interface ReservationDbAccess {
 
     @GetMapping("/flight/{flightId}/client/{clientId}")

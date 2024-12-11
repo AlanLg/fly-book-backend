@@ -3,6 +3,7 @@ package com.flybook.service.impl;
 import com.flybook.dbaccess.ClientDbAccess;
 import com.flybook.model.ClientInfoDetails;
 import com.flybook.model.dto.db.ClientDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
