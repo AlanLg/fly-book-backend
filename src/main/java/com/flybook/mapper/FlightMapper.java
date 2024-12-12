@@ -2,7 +2,7 @@ package com.flybook.mapper;
 
 import com.flybook.model.dto.request.FlightDTORequest;
 import com.flybook.model.dto.response.FlightDTOResponse;
-import com.flybook.model.entity.Flight;
+import com.flybook.model.dto.db.FlightDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -18,15 +18,15 @@ public interface FlightMapper {
     @Mapping(source = "numberOfSeats", target = "numberOfSeats")
     @Mapping(source = "price", target = "price")
     @Mapping(source = "airplane", target = "airplane")
-    Flight flightDTORequestToFlightEntity(FlightDTORequest flightDTORequest);
+    FlightDTO flightDTORequestToFlightEntity(FlightDTORequest flightDTORequest);
 
     @Mapping(source = "departureAirport", target = "departureAirport")
     @Mapping(source = "arrivalAirport", target = "arrivalAirport")
     @Mapping(source = "numberOfSeats", target = "numberOfSeats")
     @Mapping(source = "price", target = "price")
     @Mapping(source = "airplane", target = "airplane")
-    FlightDTOResponse flightEntityToFlightDTOResponse(Flight flight);
+    FlightDTOResponse flightEntityToFlightDTOResponse(FlightDTO flightDTO);
 
-    List<FlightDTOResponse> flightEntitiesToFlightDTOResponses(List<Flight> flights);
+    List<FlightDTOResponse> flightEntitiesToFlightDTOResponses(List<FlightDTO> flightDTOS);
 
 }

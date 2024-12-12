@@ -1,20 +1,21 @@
 package com.flybook.service.impl;
 
+import com.flybook.dbaccess.FlightDbAccess;
+import com.flybook.dbaccess.ReservationDbAccess;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.FlightMapper;
+import com.flybook.model.dto.db.AirplaneDTO;
+import com.flybook.model.dto.db.AirportDTO;
+import com.flybook.model.dto.db.FlightDTO;
 import com.flybook.model.dto.request.FilterFlightDTORequest;
 import com.flybook.model.dto.request.FlightDTORequest;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.FlightDTOResponse;
-import com.flybook.model.entity.Airplane;
-import com.flybook.model.entity.Airport;
-import com.flybook.model.entity.Flight;
-import com.flybook.model.entity.Reservation;
-import com.flybook.repository.FlightRepository;
-import com.flybook.repository.ReservationRepository;
+import com.flybook.model.dto.db.ReservationDTO;
 import com.flybook.service.FlightService;
 import com.flybook.utils.FlightValidationUtils;
 import com.flybook.utils.ValidationUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,71 +25,64 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
 
     private final AirportServiceImpl airportService;
     private final AirplaneServiceImpl airplaneService;
-    private final FlightRepository flightRepository;
-    private final ReservationRepository reservationRepository;
-
-
-    public FlightServiceImpl(AirportServiceImpl airportService, AirplaneServiceImpl airplaneService, FlightRepository flightRepository, ReservationRepository reservationRepository) {
-        this.airportService = airportService;
-        this.airplaneService = airplaneService;
-        this.flightRepository = flightRepository;
-        this.reservationRepository = reservationRepository;
-    }
+    private final FlightDbAccess flightDbAccess;
+    private final ReservationDbAccess reservationDbAccess;
 
     @Override
     public FlightDTOResponse addFlight(FlightDTORequest flightDTORequest) throws FlybookException {
-        Flight createdFlight = linkAndSaveAssociatedEntities(flightDTORequest);
+        FlightDTO createdFlightDTO = linkAndSaveAssociatedEntities(flightDTORequest);
 
         if (flightDTORequest.getArrivalAirport().equals(flightDTORequest.getDepartureAirport())) {
             log.info("Departure and arrival airport cannot be the same");
             throw new FlybookException("Departure and arrival airport cannot be the same", HttpStatus.CONFLICT);
         }
 
-        Optional<Flight> existingFlight = flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(
-                createdFlight.getDepartureAirport().getAirportName(),
-                createdFlight.getArrivalAirport().getAirportName()
+        Optional<FlightDTO> existingFlight = flightDbAccess.findByDepartureAndArrivalAirport(
+                createdFlightDTO.getDepartureAirport().getAirportName(),
+                createdFlightDTO.getArrivalAirport().getAirportName()
         );
 
         if (existingFlight.isPresent()) {
             return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(existingFlight.get());
         }
 
-        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(flightRepository.save(createdFlight));
+        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(flightDbAccess.saveFlight(createdFlightDTO));
     }
 
     @Override
     public FlightDTOResponse updateFlight(Long id, FlightDTORequest flightDTORequest) throws FlybookException {
-        if (id == null || flightRepository.findById(id).isEmpty()) {
+        if (id == null || flightDbAccess.findById(id).isEmpty()) {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
 
-        Flight updatedFlight = linkAndSaveAssociatedEntities(flightDTORequest);;
-        updatedFlight.setFlightId(id);
-        flightRepository.save(updatedFlight);
-        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(updatedFlight);
+        FlightDTO updatedFlightDTO = linkAndSaveAssociatedEntities(flightDTORequest);;
+        updatedFlightDTO.setFlightId(id);
+        flightDbAccess.saveFlight(updatedFlightDTO);
+        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(updatedFlightDTO);
     }
 
-    private Flight linkAndSaveAssociatedEntities(FlightDTORequest flightDTORequest) {
-        Flight updatedFlight = FlightMapper.INSTANCE.flightDTORequestToFlightEntity(flightDTORequest);
+    private FlightDTO linkAndSaveAssociatedEntities(FlightDTORequest flightDTORequest) {
+        FlightDTO updatedFlightDTO = FlightMapper.INSTANCE.flightDTORequestToFlightEntity(flightDTORequest);
 
-        if (!FlightValidationUtils.verifyElementInEntityToSave(updatedFlight)) {
+        if (!FlightValidationUtils.verifyElementInEntityToSave(updatedFlightDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Airplane airplane = airplaneService.findOrSaveAirplane(updatedFlight.getAirplane());
-        updatedFlight.setAirplane(airplane);
+        AirplaneDTO airplaneDTO = airplaneService.findOrSaveAirplane(updatedFlightDTO.getAirplane());
+        updatedFlightDTO.setAirplane(airplaneDTO);
 
-        Airport departureAirport = airportService.findOrSaveAirport(updatedFlight.getDepartureAirport());
-        updatedFlight.setDepartureAirport(departureAirport);
+        AirportDTO departureAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getDepartureAirport());
+        updatedFlightDTO.setDepartureAirport(departureAirportDTO);
 
-        Airport arrivalAirport = airportService.findOrSaveAirport(updatedFlight.getArrivalAirport());
-        updatedFlight.setArrivalAirport(arrivalAirport);
+        AirportDTO arrivalAirportDTO = airportService.findOrSaveAirport(updatedFlightDTO.getArrivalAirport());
+        updatedFlightDTO.setArrivalAirport(arrivalAirportDTO);
 
-        return updatedFlight;
+        return updatedFlightDTO;
     }
 
     @Override
@@ -97,13 +91,14 @@ public class FlightServiceImpl implements FlightService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Flight flight = flightRepository.findById(id).orElse(null);
-        if (flight != null ) {
-            List<Reservation> reservationsOfFlight = reservationRepository.findByFlight_FlightId(flight.getFlightId()).orElse(null);
+        FlightDTO flightDTO = flightDbAccess.findById(id).orElse(null);
+
+        if (flightDTO != null) {
+            List<ReservationDTO> reservationsOfFlight = reservationDbAccess.findByFlightId(flightDTO.getFlightId());
             if (reservationsOfFlight != null && !reservationsOfFlight.isEmpty()){
                 throw new FlybookException("Impossible to delete flight because some reservations are links with this flight", HttpStatus.CONFLICT);
             }
-            flightRepository.delete(flight);
+            flightDbAccess.deleteFlight(flightDTO.getFlightId());
         } else {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
@@ -111,21 +106,21 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public List<FlightDTOResponse> searchFlight(FilterFlightDTORequest filter) {
-        List<Flight> flights = flightRepository.findAll();
+        List<FlightDTO> flightDTOS = flightDbAccess.findAll();
 
         if (filter.getDepartureAirport() != null && filter.getDepartureAirport().isPresent() && ValidationUtils.isNotEmpty(filter.getDepartureAirport().get())) {
-            flights = filterByDepartureAirport(flights, filter.getDepartureAirport().get());
+            flightDTOS = filterByDepartureAirport(flightDTOS, filter.getDepartureAirport().get());
         }
 
         if (filter.getArrivalAirport() != null && filter.getArrivalAirport().isPresent() && ValidationUtils.isNotEmpty(filter.getArrivalAirport().get())) {
-            flights = filterByArrivalAirport(flights, filter.getArrivalAirport().get());
+            flightDTOS = filterByArrivalAirport(flightDTOS, filter.getArrivalAirport().get());
         }
 
-        return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(flights);
+        return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(flightDTOS);
     }
 
-    public Flight getFlightForReservation(ReservationDTORequest reservationDTORequest) {
-        return flightRepository.findByDepartureAirport_AirportNameAndArrivalAirport_AirportName(reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
+    public FlightDTO getFlightForReservation(ReservationDTORequest reservationDTORequest) {
+        return flightDbAccess.findByDepartureAndArrivalAirport(reservationDTORequest.getDepartureAirport(), reservationDTORequest.getArrivalAirport()
         ).orElseThrow(() -> new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND));
     }
 
@@ -135,33 +130,33 @@ public class FlightServiceImpl implements FlightService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Flight targetFlight = flightRepository.findById(id).orElse(null);
+        FlightDTO targetFlightDTO = flightDbAccess.findById(id).orElse(null);
 
-        if (targetFlight == null) {
+        if (targetFlightDTO == null) {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
-        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(targetFlight);
+        return FlightMapper.INSTANCE.flightEntityToFlightDTOResponse(targetFlightDTO);
     }
 
     @Override
     public List<FlightDTOResponse> getAllFlight() throws FlybookException {
-        List<Flight> targetFlights = flightRepository.findAll();
+        List<FlightDTO> targetFlightDTOS = flightDbAccess.findAll();
 
-        if (targetFlights.isEmpty()) {
+        if (targetFlightDTOS.isEmpty()) {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
 
-        return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(targetFlights);
+        return FlightMapper.INSTANCE.flightEntitiesToFlightDTOResponses(targetFlightDTOS);
     }
 
-    private List<Flight> filterByDepartureAirport(List<Flight> flights, String departureAirport) {
-        return flights.stream()
+    private List<FlightDTO> filterByDepartureAirport(List<FlightDTO> flightDTOS, String departureAirport) {
+        return flightDTOS.stream()
                 .filter(flight -> flight.getDepartureAirport().getAirportName().equalsIgnoreCase(departureAirport))
                 .toList();
     }
 
-    private List<Flight> filterByArrivalAirport(List<Flight> flights, String arrivalAirport) {
-        return flights.stream()
+    private List<FlightDTO> filterByArrivalAirport(List<FlightDTO> flightDTOS, String arrivalAirport) {
+        return flightDTOS.stream()
                 .filter(flight -> flight.getArrivalAirport().getAirportName().equalsIgnoreCase(arrivalAirport))
                 .toList();
     }

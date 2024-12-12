@@ -1,29 +1,25 @@
 package com.flybook.service.impl;
 
+import com.flybook.dbaccess.AirportDbAccess;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.AirportMapper;
+import com.flybook.model.dto.db.AirportDTO;
 import com.flybook.model.dto.request.AirportDTORequest;
 import com.flybook.model.dto.response.AirportDTOResponse;
-import com.flybook.model.entity.Airport;
-import com.flybook.repository.AirportRepository;
 import com.flybook.service.AirportService;
 import com.flybook.utils.AirportValidationUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AirportServiceImpl implements AirportService {
 
-    private final AirportRepository airportRepository;
-
-    public AirportServiceImpl(AirportRepository airportRepository) {
-        this.airportRepository = airportRepository;
-    }
+    private final AirportDbAccess airportDbAccess;
 
     @Override
     public AirportDTOResponse getAirport(Long id) throws FlybookException {
@@ -31,62 +27,59 @@ public class AirportServiceImpl implements AirportService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Airport targetAirport = airportRepository.findById(id).orElse(null);
+        Optional<AirportDTO> targetAirport = airportDbAccess.findById(id);
 
-        if (targetAirport == null) {
+        if (targetAirport.isEmpty()) {
             throw new FlybookException("No flight in the data base", HttpStatus.NOT_FOUND);
         }
-        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(targetAirport);
+        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(targetAirport.get());
     }
 
     @Override
     public List<String> getAllAirport() throws FlybookException {
-        List<Airport> targetAirports = airportRepository.findAll();
+        List<AirportDTO> targetAirportDTOS = airportDbAccess.findAll();
 
-        if (targetAirports.isEmpty()) {
+        if (targetAirportDTOS.isEmpty()) {
             throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
 
-        List<String> airports = targetAirports.stream()
-                .map(Airport::getAirportName)
+        return targetAirportDTOS.stream()
+                .map(AirportDTO::getAirportName)
                 .toList();
-
-
-        return airports;
     }
 
     @Override
     public AirportDTOResponse addAirport(AirportDTORequest airportDTORequest) throws FlybookException {
-        Airport createdAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
+        AirportDTO createdAirportDTO = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
-        if (!AirportValidationUtils.isValidAirport(createdAirport)) {
+        if (!AirportValidationUtils.isValidAirport(createdAirportDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Airport> existingAirport = airportRepository.findByAirportName(createdAirport.getAirportName());
+        Optional<AirportDTO> existingAirport = airportDbAccess.findByAirportName(createdAirportDTO.getAirportName());
 
         if (existingAirport.isPresent()) {
             return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(existingAirport.get());
         }
 
-        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(airportRepository.save(createdAirport));
+        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(airportDbAccess.saveAirport(createdAirportDTO));
     }
 
     @Override
     public AirportDTOResponse updateAirport(Long id, AirportDTORequest airportDTORequest) throws FlybookException {
-        if (id == null || airportRepository.findById(id).isEmpty()) {
+        if (id == null || airportDbAccess.findById(id).isEmpty()) {
             throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
 
-        Airport updatedAirport = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
+        AirportDTO updatedAirportDTO = AirportMapper.INSTANCE.airportDTORequestToAirportEntity(airportDTORequest);
 
-        if (!AirportValidationUtils.isValidAirport(updatedAirport)) {
+        if (!AirportValidationUtils.isValidAirport(updatedAirportDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        updatedAirport.setAirportId(id);
-        airportRepository.save(updatedAirport);
-        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(updatedAirport);
+        updatedAirportDTO.setAirportId(id);
+        airportDbAccess.saveAirport(updatedAirportDTO);
+        return AirportMapper.INSTANCE.airportEntityToAirportDTOResponse(updatedAirportDTO);
     }
 
     @Override
@@ -95,15 +88,17 @@ public class AirportServiceImpl implements AirportService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Airport airport = airportRepository.findById(id).orElse(null);
-        if (airport != null) {
-            airportRepository.delete(airport);
+        AirportDTO airportDTO = airportDbAccess.findById(id).orElse(null);
+
+        if (airportDTO != null) {
+            airportDbAccess.deleteAirport(airportDTO.getAirportId());
         } else {
             throw new FlybookException("No airport in the data base", HttpStatus.NOT_FOUND);
         }
     }
 
-    public Airport findOrSaveAirport(Airport airport) {
-        return airportRepository.findByAirportName(airport.getAirportName()).orElseGet(() -> airportRepository.save(airport));
+    public AirportDTO findOrSaveAirport(AirportDTO airportDTO) {
+        return airportDbAccess.findByAirportName(airportDTO.getAirportName())
+                .orElseGet(() -> airportDbAccess.saveAirport(airportDTO));
     }
 }

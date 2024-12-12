@@ -1,16 +1,17 @@
 package com.flybook.service.impl;
 
+import com.flybook.dbaccess.ProfileDbAccess;
+import com.flybook.dbaccess.ReservationDbAccess;
 import com.flybook.exception.FlybookException;
-import com.flybook.mapper.ProfilMapper;
+import com.flybook.mapper.ProfileMapper;
 import com.flybook.mapper.ReservationMapper;
+import com.flybook.model.dto.db.ClientDTO;
+import com.flybook.model.dto.db.FlightAndDepartureDateDTO;
+import com.flybook.model.dto.db.FlightDTO;
+import com.flybook.model.dto.db.ProfileDTO;
 import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ReservationDTOResponse;
-import com.flybook.model.entity.Client;
-import com.flybook.model.entity.Flight;
-import com.flybook.model.entity.Profile;
-import com.flybook.model.entity.Reservation;
-import com.flybook.repository.ProfilRepository;
-import com.flybook.repository.ReservationRepository;
+import com.flybook.model.dto.db.ReservationDTO;
 import com.flybook.service.ReservationService;
 import com.flybook.utils.ReservationValidationUtils;
 import lombok.Getter;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Sinks;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,31 +31,35 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationDbAccess reservationDbAccess;
     private final ClientServiceImpl clientService;
     private final FlightServiceImpl flightService;
-    private final ProfilRepository profilRepository;
+    private final ProfileDbAccess profileDbAccess;
     private final CurrencyServiceImpl currencyService;
     @Getter
     private final Sinks.Many<String> sink = Sinks.many().multicast().onBackpressureBuffer();
 
     @Override
     public ReservationDTOResponse createReservation(ReservationDTORequest reservationDTORequest, String email) {
-        Client client = clientService.getClientForReservation(email);
-        return finaliserReservation(reservationDTORequest, client);
+        ClientDTO clientDTO = clientService.getClientForReservation(email);
+        return finaliserReservation(reservationDTORequest, clientDTO);
     }
 
     @Override
     public List<ReservationDTOResponse> getAllReservationsForClient(String clientEmail) {
         return ReservationMapper.INSTANCE
-                .reservationEntityToReservationDTOResponse(reservationRepository.findByClient_Email(clientEmail));
+                .reservationEntityToReservationDTOResponse(reservationDbAccess.findByClientEmail(clientEmail));
     }
 
-    private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, Client client) {
-        Flight flight = flightService.getFlightForReservation(reservationDTORequest);
+    private ReservationDTOResponse finaliserReservation(ReservationDTORequest reservationDTORequest, ClientDTO clientDTO) {
+        FlightDTO flightDTO = flightService.getFlightForReservation(reservationDTORequest);
 
-        int numberOfSeatsForFlight = reservationRepository.countDistinctByFlightAndDepartureDate(flight, reservationDTORequest.getDepartureDate());
-        if (numberOfSeatsForFlight == flight.getNumberOfSeats()) {
+        FlightAndDepartureDateDTO flightAndDepartureDateDTO = new FlightAndDepartureDateDTO();
+        flightAndDepartureDateDTO.setDepartureDate(reservationDTORequest.getDepartureDate());
+        flightAndDepartureDateDTO.setFlight(flightDTO);
+
+        int numberOfSeatsForFlight = reservationDbAccess.countDistinctByFlightAndDepartureDate(flightAndDepartureDateDTO);
+        if (numberOfSeatsForFlight == flightDTO.getNumberOfSeats()) {
             Sinks.EmitResult result = sink.tryEmitNext("failed");
             if (result.isFailure()) {
                 log.error("Failed to push event");
@@ -63,58 +67,53 @@ public class ReservationServiceImpl implements ReservationService {
             throw new FlybookException("The flight is full", HttpStatus.CONFLICT);
         }
 
-        Reservation createdReservation = ReservationMapper.INSTANCE.clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(client, flight, reservationDTORequest);
-        if (!ReservationValidationUtils.isValidReservation(createdReservation)) {
+        ReservationDTO createdReservationDTO = ReservationMapper.INSTANCE.clientEntityAndFlightEntityAndReservationDTORequestToReservationEntity(clientDTO, flightDTO, reservationDTORequest);
+        if (!ReservationValidationUtils.isValidReservation(createdReservationDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Reservation> existingReservation = reservationRepository.findByFlight_FlightIdAndClient_Id(createdReservation.getFlight().getFlightId(), createdReservation.getClient().getId());
+        Optional<ReservationDTO> existingReservation = reservationDbAccess.findByFlightIdAndClientId(createdReservationDTO.getFlight().getFlightId(), createdReservationDTO.getClient().getId());
 
         if (existingReservation.isPresent()) {
             return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(existingReservation.get());
         }
 
-        List<Profile> profiles = ProfilMapper.INSTANCE.profilDTORequestListToProfilListEntity(reservationDTORequest.getProfilDTORequestList());
-        createdReservation.setPriceOfReservation(getTotalPriceOfReservation(flight.getPrice(), profiles, reservationDTORequest.getCurrency()));
-        createdReservation.setNbLuggage(profiles.stream().mapToInt(Profile::getNbLuggage).sum());
-        createdReservation = reservationRepository.save(createdReservation);
+        List<ProfileDTO> profileDTOS = ProfileMapper.INSTANCE.profileDTORequestListToProfileListEntity(reservationDTORequest.getProfileDTORequestList());
+        createdReservationDTO.setPriceOfReservation(getTotalPriceOfReservation(flightDTO.getPrice(), profileDTOS, reservationDTORequest.getCurrency()));
+        createdReservationDTO.setNbLuggage(profileDTOS.stream().mapToInt(ProfileDTO::getNbLuggage).sum());
+        createdReservationDTO = reservationDbAccess.saveReservation(createdReservationDTO);
 
-        for (Profile profile : profiles) {
-            profile.setReservation(createdReservation);
-            profilRepository.save(profile);
+        for (ProfileDTO profileDTO : profileDTOS) {
+            profileDTO.setReservation(createdReservationDTO);
+            profileDbAccess.saveProfile(profileDTO);
         }
 
-        createdReservation.setProfiles(profiles);
+        createdReservationDTO.setProfiles(profileDTOS);
 
         Sinks.EmitResult result = sink.tryEmitNext("success");
         if (result.isFailure()) {
             log.error("Failed to push event");
         }
-        return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(createdReservation);
+        return ReservationMapper.INSTANCE.reservationEntityToReservationDTOResponse(createdReservationDTO);
     }
 
-    private double getTotalPriceOfReservation(double singleFlightPrice, List<Profile> profiles, String currency) {
+    private double getTotalPriceOfReservation(double singleFlightPrice, List<ProfileDTO> profileDTOS, String currency) {
         Map<String, Double> currencies = currencyService.getCurrencies();
-        double priceOfAllLuggage = profiles.stream().mapToInt(Profile::getNbLuggage).sum() * 100;
-        double totalFlightPrice = singleFlightPrice * profiles.size();
-        long amountOfChildren = profiles.stream()
+        double priceOfAllLuggage = profileDTOS.stream().mapToInt(ProfileDTO::getNbLuggage).sum() * 100;
+        double totalFlightPrice = singleFlightPrice * profileDTOS.size();
+        long amountOfChildren = profileDTOS.stream()
                 .filter(this::isChild)
                 .count();
-        long amountOfAdult = profiles.size() - amountOfChildren;
+        long amountOfAdult = profileDTOS.size() - amountOfChildren;
 
-        if (profiles.size() >= 4 && amountOfChildren >= 2 && amountOfAdult >= 2) {
+        if (profileDTOS.size() >= 4 && amountOfChildren >= 2 && amountOfAdult >= 2) {
             totalFlightPrice -= singleFlightPrice;
         }
 
         return (totalFlightPrice + priceOfAllLuggage) * currencies.get(currency);
     }
 
-    private boolean isChild(Profile profile) {
-        return profile.getBirthday().isBefore(LocalDate.now().minusYears(15));
-    }
-
-    @Override
-    public Long getNumberOfReservationsInRealTime() throws FlybookException {
-        return reservationRepository.countAllByCreationDateIsAfter(LocalDateTime.now());
+    private boolean isChild(ProfileDTO profileDTO) {
+        return profileDTO.getBirthday().isBefore(LocalDate.now().minusYears(15));
     }
 }

@@ -1,12 +1,11 @@
 package com.flybook.service.impl;
 
+import com.flybook.dbaccess.ClientDbAccess;
 import com.flybook.exception.FlybookException;
 import com.flybook.mapper.ClientMapper;
+import com.flybook.model.dto.db.ClientDTO;
 import com.flybook.model.dto.request.ClientDTORequest;
-import com.flybook.model.dto.request.ReservationDTORequest;
 import com.flybook.model.dto.response.ClientDTOResponse;
-import com.flybook.model.entity.Client;
-import com.flybook.repository.ClientRepository;
 import com.flybook.service.ClientService;
 import com.flybook.utils.ClientValidationUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +21,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final ClientRepository clientRepository;
+    private final ClientDbAccess clientDbAccess;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public ClientDTOResponse getClient(Long id) {
-        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(clientRepository.findById(id).orElseThrow(() -> new FlybookException("Aucun client en bdd", HttpStatus.NOT_FOUND)));
+        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(clientDbAccess.findById(id)
+                .orElseThrow(() -> new FlybookException("Client with id: " + id + " not found", HttpStatus.NOT_FOUND)));
     }
 
     @Override
@@ -36,36 +36,36 @@ public class ClientServiceImpl implements ClientService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Client createdClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
+        ClientDTO createdClientDTO = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
-        Optional<Client> existingClient = clientRepository.findByEmail(createdClient.getEmail());
+        Optional<ClientDTO> existingClient = clientDbAccess.findByEmail(createdClientDTO.getEmail());
 
         if (existingClient.isPresent()) {
-            log.info("Client already exists with email: {}", createdClient.getEmail());
+            log.info("Client already exists with email: {}", createdClientDTO.getEmail());
             throw new FlybookException("Client already exists with email", HttpStatus.CONFLICT);
         }
 
-        log.info("created client: {}", createdClient);
-        createdClient.setPassword(passwordEncoder.encode(createdClient.getPassword()));
-        Client client = clientRepository.save(createdClient);
-        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(client);
+        log.info("created client: {}", createdClientDTO);
+        createdClientDTO.setPassword(passwordEncoder.encode(createdClientDTO.getPassword()));
+        ClientDTO clientDTO = clientDbAccess.saveClient(createdClientDTO);
+        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(clientDTO);
     }
 
     @Override
     public ClientDTOResponse updateClient(Long id, ClientDTORequest clientDTORequest) throws FlybookException {
-        if (id == null || clientRepository.findById(id).isEmpty()) {
+        if (id == null || clientDbAccess.findById(id).isEmpty()) {
             throw new FlybookException("No client in the data base", HttpStatus.NOT_FOUND);
         }
 
-        Client updatedClient = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
+        ClientDTO updatedClientDTO = ClientMapper.INSTANCE.clientDTORequestToClientEntity(clientDTORequest);
 
-        if (!ClientValidationUtils.isValidClient(updatedClient)) {
+        if (!ClientValidationUtils.isValidClient(updatedClientDTO)) {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        updatedClient.setId(id);
-        clientRepository.save(updatedClient);
-        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(updatedClient);
+        updatedClientDTO.setId(id);
+        clientDbAccess.saveClient(updatedClientDTO);
+        return ClientMapper.INSTANCE.clientEntityToClientDTOResponse(updatedClientDTO);
     }
 
     @Override
@@ -74,17 +74,17 @@ public class ClientServiceImpl implements ClientService {
             throw new FlybookException("Missing elements in the JSON", HttpStatus.BAD_REQUEST);
         }
 
-        Client client = clientRepository.findById(id).orElse(null);
-        if (client != null) {
-            clientRepository.delete(client);
+        ClientDTO clientDTO = clientDbAccess.findById(id).orElse(null);
+        if (clientDTO != null) {
+            clientDbAccess.deleteClient(clientDTO.getId());
         } else {
             throw new FlybookException("No client in the data base", HttpStatus.NOT_FOUND);
         }
     }
 
-    public Client getClientForReservation(String email) {
-        return clientRepository.findByEmail(email)
-                .orElseThrow(() -> new FlybookException("No client in the data base", HttpStatus.NOT_FOUND)
+    public ClientDTO getClientForReservation(String email) {
+        return clientDbAccess.findByEmail(email)
+                .orElseThrow(() -> new FlybookException("Client with email: " + email + " not found", HttpStatus.NOT_FOUND)
                 );
     }
 }

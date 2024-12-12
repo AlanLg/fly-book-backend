@@ -1,6 +1,6 @@
 package com.flybook.model;
 
-import com.flybook.model.entity.Client;
+import com.flybook.model.dto.db.ClientDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +16,7 @@ public class ClientInfoDetails implements UserDetails {
     private final String password;
     private final List<GrantedAuthority> authorities;
 
-    public ClientInfoDetails(Client userInfo) {
+    public ClientInfoDetails(ClientDTO userInfo) {
         this.username = userInfo.getEmail();
         this.password = userInfo.getPassword();
         this.authorities = Stream.of(userInfo.getRoles().split(","))

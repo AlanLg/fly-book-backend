@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -55,9 +53,9 @@ public class SecurityConfig {
                             .configurationSource(source);
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/client/**", "/h2-console/**", "/realtime/**").permitAll()
-                        .requestMatchers("/reservation/**", "/currencies/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/airport/**", "/flight/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/v1/client/**", "/h2-console/**", "/v1/realtime/**").permitAll()
+                        .requestMatchers("/v1/reservation/**", "/v1/currencies/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/v1/airport/**", "/v1/flight/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess

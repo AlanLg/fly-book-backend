@@ -11,7 +11,7 @@ import java.util.List;
 public class ReservationDTOResponse {
     private FlightDTOResponse flight;
     private ClientDTOResponse client;
-    private List<ProfilDTOResponse> profilDTOResponseList;
+    private List<ProfileDTOResponse> profileDTOResponseList;
     private LocalDate departureDate;
     private double priceOfReservation;
     private int nbLuggage;
