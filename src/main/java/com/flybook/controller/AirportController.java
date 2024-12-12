@@ -29,12 +29,12 @@ public class AirportController {
         return ResponseEntity.ok(airportService.getAirport(id));
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<String>> getAllAirport() throws FlybookException {
         return ResponseEntity.ok(airportService.getAllAirport());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<AirportDTOResponse> addAirport(@RequestBody AirportDTORequest airportDTORequest) throws FlybookException {
         log.info("Adding airport: {}", airportDTORequest.toString());
         return ResponseEntity.ok(airportService.addAirport(airportDTORequest));

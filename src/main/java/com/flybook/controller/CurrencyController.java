@@ -17,7 +17,7 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<Currency>> fetchRates() {
         return ResponseEntity.ok(currencyService.fetchAndParseCurrencyXML());
     }

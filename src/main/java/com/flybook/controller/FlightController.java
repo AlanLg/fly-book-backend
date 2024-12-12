@@ -30,12 +30,12 @@ public class FlightController {
         return ResponseEntity.ok(flightService.getFlight(id));
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<FlightDTOResponse>> getAllFlight() throws FlybookException {
         return ResponseEntity.ok(flightService.getAllFlight());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<FlightDTOResponse> addFlight(@Valid @RequestBody FlightDTORequest flightDTORequest) throws FlybookException {
         log.info("Adding flight: {}", flightDTORequest.toString());
         return ResponseEntity.ok(flightService.addFlight(flightDTORequest));

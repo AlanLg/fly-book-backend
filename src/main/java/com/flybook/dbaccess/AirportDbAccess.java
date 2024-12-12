@@ -17,7 +17,7 @@ public interface AirportDbAccess {
     @GetMapping("/id/{id}")
     Optional<AirportDTO> findById(@PathVariable Long id);
 
-    @GetMapping("/")
+    @GetMapping("")
     List<AirportDTO> findAll();
 
     @GetMapping("/name/{airportName}")
@@ -26,6 +26,6 @@ public interface AirportDbAccess {
     @DeleteMapping("/id/{id}")
     Void deleteAirport(@PathVariable Long id);
 
-    @PostMapping("/")
+    @PostMapping("")
     AirportDTO saveAirport(@RequestBody AirportDTO airportDTO);
 }

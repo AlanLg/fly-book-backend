@@ -25,7 +25,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ReservationDTOResponse> addReservationWithExistingClient(@RequestBody ReservationDTORequest reservationDTORequest, Principal principal) throws FlybookException {
 
         return ResponseEntity.ok(reservationService.createReservation(reservationDTORequest, principal.getName()));

@@ -19,7 +19,7 @@ public interface AirplaneDbAccess {
     @GetMapping("/brand/{brand}/model/{model}")
     Optional<AirplaneDTO> findByBrandAndModel(@PathVariable String brand, @PathVariable String model);
 
-    @PostMapping("/")
+    @PostMapping("")
     AirplaneDTO saveAirplane(@RequestBody AirplaneDTO airplaneDTO);
 
     @DeleteMapping("/id/{id}")

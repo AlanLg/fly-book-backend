@@ -24,7 +24,7 @@ public interface ReservationDbAccess {
     @GetMapping("/flight/{flightId}")
     List<ReservationDTO> findByFlightId(@PathVariable Long flightId);
 
-    @PostMapping("/")
+    @PostMapping("")
     ReservationDTO saveReservation(@RequestBody ReservationDTO reservationDTO);
 
     @PostMapping("/count")

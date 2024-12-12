@@ -20,13 +20,13 @@ public interface FlightDbAccess {
     @GetMapping("/departure/{departureAirport}/arrival/{arrivalAirport}")
     Optional<FlightDTO> findByDepartureAndArrivalAirport(@PathVariable String departureAirport, @PathVariable String arrivalAirport);
 
-    @GetMapping("/")
+    @GetMapping("")
     List<FlightDTO> findAll();
 
     @DeleteMapping("/id/{id}")
     void deleteFlight(@PathVariable Long id);
 
-    @PostMapping("/")
+    @PostMapping("")
     FlightDTO saveFlight(@RequestBody FlightDTO flightDTO);
 
 }

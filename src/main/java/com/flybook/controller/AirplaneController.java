@@ -23,7 +23,7 @@ public class AirplaneController {
         return ResponseEntity.ok(airplaneService.getAirplane(id));
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<AirplaneDTOResponse> addAirplane(@RequestBody AirplaneDTORequest airplaneDTORequest) throws FlybookException {
         log.info("Adding airplane: {}", airplaneDTORequest.toString());
         return ResponseEntity.ok(airplaneService.addAirplane(airplaneDTORequest));

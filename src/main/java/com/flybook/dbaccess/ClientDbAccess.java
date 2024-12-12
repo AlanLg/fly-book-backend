@@ -22,6 +22,6 @@ public interface ClientDbAccess {
     @DeleteMapping("/id/{id}")
     void deleteClient(@PathVariable Long id);
 
-    @PostMapping("/")
+    @PostMapping("")
     ClientDTO saveClient(@RequestBody ClientDTO clientDTO);
 }
